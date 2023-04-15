@@ -1,32 +1,43 @@
-# Prerequisites
-*.d
+*.ex5
+*.db
+*.dat
+*.log
+.vscode/
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+Experts/Examples/
+Experts/Advisors/
 
-# Precompiled Headers
-*.gch
-*.pch
+Files/
+Images/
+Libraries/
+Logs/
+Profiles/
+Services/
+Shared Projects/
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+Include/Arrays/
+Include/Canvas/
+Include/ChartObjects/
+Include/Charts/
+Include/Controls/
+Include/Expert/
+Include/Files/
+Include/Generic/
+Include/Graphics/
+Include/Indicators/
+Include/Math/
+Include/OpenCL/
+Include/Strings/
+Include/Tools/
+Include/Trade/
+Include/WinAPI/
 
-# Fortran module files
-*.mod
-*.smod
+Include/MovingAverages.mqh
+Include/Object.mqh
+Include/StdLibErr.mqh
+Include/VirtualKeys.mqh
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+Indicators/Examples/
 
-# Executables
-*.exe
-*.out
-*.app
+Scripts/Examples/
+Scripts/UnitTests/
