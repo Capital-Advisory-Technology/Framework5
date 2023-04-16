@@ -1,0 +1,35 @@
+//+------------------------------------------------------------------+
+//|                                                        Enums.mqh |
+//|                                           Copyright 2023, Critiq |
+//|                                                                  |
+//+------------------------------------------------------------------+
+#property copyright "Copyright 2023, Critiq"
+#property link      ""
+
+enum OrderAction 
+{
+   OA_OPEN_LONG,
+   OA_OPEN_SHORT,
+   OA_CONFIRMED,
+   OA_CLOSE,
+   OA_IGNORE   
+};
+
+enum AllowedOrder 
+{
+   OPEN_LONG = 0,
+   OPEN_SHORT = 1,
+   OPEN_BOTH = 2 
+};
+
+enum PositionStatus 
+{
+   AVAILABLE_TO_OPEN,
+   IS_OPENED
+};
+
+enum CloseType 
+{
+   MANUAL_CLOSE = 0,
+   AUTOMATIC_CLOSE = 1
+};
