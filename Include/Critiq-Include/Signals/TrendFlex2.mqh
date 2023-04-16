@@ -1,9 +1,9 @@
 #include <Critiq-Include/Signals/ReturnSignal.mqh>
 #include <Indicators/Indicators.mqh>
 
-class TrendFlex : public CiCustom {    
+class TrendFlex {    
     protected:
-        CiCustom trendFlex;
+        // CiCustom trendFlex;
         
         int inpFastPeriod; 
         int inpSlowPeriod;
@@ -18,20 +18,36 @@ class TrendFlex : public CiCustom {
         int getFastPeriod() { return inpFastPeriod; }
         int getSlowPeriod() { return inpSlowPeriod; }
 
-        virtual bool InitIndicators(CIndicators *indicators);
+        double checkForSignal(int inpFastPeriod, int inpSlowPeriod) {return true;};
+        // virtual bool InitIndicators(CIndicators *indicators);
 
-        virtual int LongCondition(void);
-        virtual int ShortCondition(void);
+        // virtual int LongCondition(void);
+        // virtual int ShortCondition(void);
 
     protected:
-        bool InitDema(CIndicators *indicators);
+        // bool InitDema(CIndicators *indicators);
 
 };
-
 void TrendFlex::TrendFlex(void) : inpFastPeriod(50),
                                   inpSlowPeriod(25) {}
+void TrendFlex::~TrendFlex(void) {
+  
+}
 
-void TrendFlex::~TrendFlex(void) {}
+double checkForSignal(int inpFastPeriod, int inpSlowPeriod) { 
+  double fastPeriodValue = iCustom(Symbol(), Period(), "TrendFlex2.mq5", inpFastPeriod, inpSlowPeriod, 0, 1);
+  double fastPeriodValuePrev = iCustom(Symbol(), Period(), "TrendFlex2.mq5", inpFastPeriod, inpSlowPeriod, 0, 2);
+
+  double slowPeriodValue = iCustom(Symbol(), Period(), "TrendFlex2.mq5", inpFastPeriod, inpSlowPeriod, 1, 1);
+  double slowPeriodValuePrev = iCustom(Symbol(), Period(), "TrendFlex2.mq5", inpFastPeriod, inpSlowPeriod, 1, 2);
+
+  Print("fastPeriodValue: " + fastPeriodValue);
+  Print("fastPeriodValuePrev: " + fastPeriodValuePrev);
+  Print("slowPeriodValue: " + slowPeriodValue);
+  Print("slowPeriodValuePrev: " + slowPeriodValuePrev);
+
+  return true;
+}
 
 // bool TrendFlex::InitIndicators(CIndicators *indicators) {
 //     if(indicators == NULL) // Checks for pointer

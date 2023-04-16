@@ -32,5 +32,6 @@ void OnDeinit(const int reason) {
 
 void OnTick() {
 
-   
+   trendFlex.checkForSignal(inpFastPeriod, inpSlowPeriod);
+
 }
