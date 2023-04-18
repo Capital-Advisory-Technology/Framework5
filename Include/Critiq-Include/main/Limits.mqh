@@ -10,11 +10,16 @@ class Limits {
         double lossAmount;
         int countAmount;
         string session;
-        int dayOfWeek;  // this possibly should be a vector of bools
+        int dayOfWeek;  // this possibly should be a vector of bool
+
+        
 
     public:
         Limits(void);
         ~Limits(void);
+
+        void InitLossLimit(double amount) { lossLimit = true; lossAmount = amount; }
+        bool GetLossLimit();
 
         bool LossLimit();
         bool CountLimit();
@@ -45,6 +50,12 @@ bool Limits::LossLimit() {
     return false;
 }
 
+bool Limits::GetLossLimit() {
+    bool results = false;
+
+    return results;
+}
+
 bool Limits::CountLimit() {
     // Checks if in defined period of time the number of trades is greater than the limit
     return false;
@@ -61,8 +72,23 @@ bool Limits::DayOfWeekLimit() {
 }
 
 bool Limits::getLimits() {
-    if (lossLimit && LossLimit()) return true;
-    if (countLimit && CountLimit()) return true;
+    if (lossLimit) {
+        if (LossLimit()) {
+            return true;
+        }
+    } else if (countLimit) {
+        if (CountLimit()) {
+            return true;
+        }
+    } else if (sessionLimit) {
+        if (SessionLimit()) {
+            return true;
+        }
+    } else if (dayOfWeekLimit) {
+        if (DayOfWeekLimit()) {
+            return true;
+        }
+    }
 
     return false;
 }
