@@ -1,15 +1,32 @@
 #include <Critiq-Include/common/Logger.mqh> 
 #include <Trade/SymbolInfo.mqh>
 
-// Left to replace OrderModify() functions, will be done by MqlTradeRequest{}
-// MQL5 Reference  /  Constants, Enumerations and Structures  /  Trade Constants / Trade Operation Types 
+bool ModifyOrderBreakeven(ulong oticket, double breakeven_price) {
+   MqlTradeRequest request = {};
+   MqlTradeResult result = {};
+
+   ZeroMemory(request);
+   ZeroMemory(result);   
+
+   request.action = TRADE_ACTION_SLTP;
+   request.position = oticket;
+   request.symbol = Symbol(); // Might be useless
+   request.sl = breakeven_price;
+
+   if(!OrderSend(request, result)) {
+      gLog.Fatal("-Breakeven modify failed-");
+      return false;
+   }
+     
+   return true;
+}
 
 bool CheckForBreakEven(double breakeven) {
    double Ask = SymbolInfoDouble(Symbol(), SYMBOL_ASK);
    double Bid = SymbolInfoDouble(Symbol(), SYMBOL_ASK);
 
    if (OrderSelect(0) == true) {
-      int oticket = OrderGetTicket(0);
+      ulong oticket = OrderGetTicket(0);
       double oop = OrderGetDouble(ORDER_PRICE_OPEN);
       double osl = OrderGetDouble(ORDER_SL);
       double otp = OrderGetDouble(ORDER_TP);
@@ -25,13 +42,13 @@ bool CheckForBreakEven(double breakeven) {
          if (ENUM_ORDER_TYPE(OrderGetInteger(ORDER_TYPE)) == ORDER_TYPE_BUY) {
             breakEvenPrice = NormalizeDouble(((otp - oop) * breakeven + oop), Digits());
             if (SymbolInfoDouble(Symbol(), SYMBOL_BID) >= breakEvenPrice || high >= breakEvenPrice) {
-               orderModify = PositionModify(oticket, oop, otp);
+               orderModify = ModifyOrderBreakeven(oticket, oop);
                return true;
             } else return false;
          } else {
             breakEvenPrice = NormalizeDouble((oop - (oop - otp) * breakeven), Digits());
             if (SymbolInfoDouble(Symbol(), SYMBOL_ASK) <= breakEvenPrice || low <= breakEvenPrice) {
-               orderModify = OrderModify(oticket, oop, oop, otp, 0, clrOrange);
+               orderModify = ModifyOrderBreakeven(oticket, oop);
                return true;
             } else return false;
          }      
