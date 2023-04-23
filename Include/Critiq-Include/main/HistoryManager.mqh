@@ -13,6 +13,8 @@ class HistoryManager {
 
 };
 
+extern HistoryManager *historyManager;
+
 HistoryManager::HistoryManager(void) : lastNHours(0)
 {
 }
@@ -55,6 +57,8 @@ void HistoryManager::GetLastNHours(Deal& deals[], int hours) {
             deal.position_id = (int)HistoryDealGetInteger(ticket, DEAL_POSITION_ID);
             deal.comment = HistoryDealGetString(ticket, DEAL_COMMENT);
             
+            ArrayResize(deals, ArraySize(deals) + 1);
+            deals[ArraySize(deals) - 1] = deal;
         }
 
     }
