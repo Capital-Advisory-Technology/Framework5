@@ -1,4 +1,6 @@
 #include <Critiq-Include/common/Logger.mqh>
+#include <Critiq-Include/common/Logger.mqh>
+
 
 class Limits {
     protected:
@@ -7,7 +9,9 @@ class Limits {
         bool sessionLimit;
         bool dayOfWeekLimit;
 
-        double lossAmount;
+        double lossPercent;
+        int lossHours;
+
         int countAmount;
         string session;
         int dayOfWeek;  // this possibly should be a vector of bool
@@ -18,8 +22,7 @@ class Limits {
         Limits(void);
         ~Limits(void);
 
-        void InitLossLimit(double amount) { lossLimit = true; lossAmount = amount; }
-        bool GetLossLimit();
+        void InitLossLimit(double cLossPercent, int hours);
 
         bool LossLimit();
         bool CountLimit();
@@ -34,7 +37,7 @@ Limits::Limits(void) :  lossLimit(false),
                         countLimit(false),
                         sessionLimit(false),
                         dayOfWeekLimit(false),
-                        lossAmount(0),
+                        lossPercent(0),
                         countAmount(0),
                         session(""),
                         dayOfWeek(0)
@@ -45,16 +48,19 @@ Limits::~Limits(void)
 {
 }
 
+void Limits::InitLossLimit(double cLossPercent, int hours) {
+    lossLimit = true;
+    lossPercent = cLossPercent;
+    lossHours = hours;
+
+    Print("Loss limit set to: ", lossPercent, " in ", lossHours, " hours");
+}
+
 bool Limits::LossLimit() {
     // Checks if in defined period of time the loss is greater than the limit
     return false;
 }
 
-bool Limits::GetLossLimit() {
-    bool results = false;
-
-    return results;
-}
 
 bool Limits::CountLimit() {
     // Checks if in defined period of time the number of trades is greater than the limit
