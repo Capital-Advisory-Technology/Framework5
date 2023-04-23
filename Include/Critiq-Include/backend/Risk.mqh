@@ -1,5 +1,4 @@
 #include <Critiq-Include/common/Logger.mqh> 
-#include <Trade/SymbolInfo.mqh>
 
 bool ModifyOrderBreakeven(ulong oticket, double breakeven_price) {
    MqlTradeRequest request = {};
