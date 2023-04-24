@@ -1,6 +1,6 @@
 #include <Critiq-Include/common/Logger.mqh> 
 
-bool ModifyOrderBreakeven(ulong oticket, double breakeven_price) {
+bool ModifyOrderSL(ulong oticket, double breakeven_price) {
    MqlTradeRequest request = {};
    MqlTradeResult result = {};
 
@@ -22,7 +22,7 @@ bool ModifyOrderBreakeven(ulong oticket, double breakeven_price) {
 
 bool CheckForBreakEven(double breakeven) {
    double Ask = SymbolInfoDouble(Symbol(), SYMBOL_ASK);
-   double Bid = SymbolInfoDouble(Symbol(), SYMBOL_ASK);
+   double Bid = SymbolInfoDouble(Symbol(), SYMBOL_BID);
 
    if (OrderSelect(0) == true) {
       ulong oticket = OrderGetTicket(0);
@@ -41,13 +41,13 @@ bool CheckForBreakEven(double breakeven) {
          if (ENUM_ORDER_TYPE(OrderGetInteger(ORDER_TYPE)) == ORDER_TYPE_BUY) {
             breakEvenPrice = NormalizeDouble(((otp - oop) * breakeven + oop), Digits());
             if (SymbolInfoDouble(Symbol(), SYMBOL_BID) >= breakEvenPrice || high >= breakEvenPrice) {
-               orderModify = ModifyOrderBreakeven(oticket, oop);
+               orderModify = ModifyOrderSL(oticket, oop);
                return true;
             } else return false;
          } else {
             breakEvenPrice = NormalizeDouble((oop - (oop - otp) * breakeven), Digits());
             if (SymbolInfoDouble(Symbol(), SYMBOL_ASK) <= breakEvenPrice || low <= breakEvenPrice) {
-               orderModify = ModifyOrderBreakeven(oticket, oop);
+               orderModify = ModifyOrderSL(oticket, oop);
                return true;
             } else return false;
          }      

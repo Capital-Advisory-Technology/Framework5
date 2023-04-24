@@ -2,13 +2,13 @@
 #resource "\\" + ATRIndicator
 
 // Calculates LotSize based on balance, risk and StopLoss           
-double GetLotSize(double risk, int stopLoss) {
+double CalculateLotSize(double risk, int PointsSL) {
    double lotStep = SymbolInfoDouble(Symbol(), SYMBOL_VOLUME_STEP);
    double minLot = SymbolInfoDouble(Symbol(), SYMBOL_VOLUME_MIN);
    double maxLot =  SymbolInfoDouble(Symbol(), SYMBOL_VOLUME_MAX);
    double tickVal = SymbolInfoDouble(Symbol(), SYMBOL_TRADE_TICK_VALUE);
    double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
-   double lotSize = accountBalance * risk / 100 / (stopLoss * tickVal);
+   double lotSize = accountBalance * risk / 100 / (PointsSL * tickVal);
    return MathMin(maxLot, MathMax(minLot,NormalizeDouble(lotSize / lotStep, 0) * lotStep));
 }
 
@@ -25,41 +25,41 @@ int CalculateSL_ATR(double stopLossRatio, int ATRPeriod, bool fixed) {
   return stopLoss;
 }
 
-int CalculateTP_Ratio(double takeProfitRatio, int stopLoss ,bool fixed) {
+int CalculateTP_Ratio(double takeProfitRatio, int PointsSL ,bool fixed) {
   int takeProfit;
   if(fixed) takeProfit = (int)MathRound(takeProfitRatio);
   else {
-    takeProfit = (int)(stopLoss * takeProfitRatio);
+    takeProfit = (int)(PointsSL * takeProfitRatio);
   }
 
   return takeProfit;
 }
 
-double GetSLprice(int stopLoss, int orderType) {
+double GetSLprice(int PointsSL, int orderType) {
    double price = .0;
 
    switch(orderType)
      {
       case ORDER_TYPE_BUY:
-         price = SymbolInfoDouble(Symbol(), SYMBOL_ASK) - stopLoss * Point();
+         price = SymbolInfoDouble(Symbol(), SYMBOL_ASK) - PointsSL * Point();
          break;
       case ORDER_TYPE_SELL:
-         price = SymbolInfoDouble(Symbol(), SYMBOL_BID) + stopLoss * Point();
+         price = SymbolInfoDouble(Symbol(), SYMBOL_BID) + PointsSL * Point();
          break;
      }
    return price;
 }
 
-double GetTPprice(int takeProfit, int orderType) {
+double GetTPprice(int PointsTP, int orderType) {
    double price = .0;
 
    switch(orderType)
      {
       case ORDER_TYPE_BUY:
-         price = SymbolInfoDouble(Symbol(), SYMBOL_ASK) + takeProfit * Point();
+         price = SymbolInfoDouble(Symbol(), SYMBOL_ASK) + PointsTP * Point();
          break;
       case ORDER_TYPE_SELL:
-         price = SymbolInfoDouble(Symbol(), SYMBOL_BID) - takeProfit * Point();
+         price = SymbolInfoDouble(Symbol(), SYMBOL_BID) - PointsTP * Point();
          break;
      }
    return price;
