@@ -1,11 +1,11 @@
-#define ATRIndicator "Indicators\\Adaptive_ATR.ex4"
-#resource "\\" + ATRIndicator
+// #define ATRIndicator "Indicators\\Adaptive_ATR.ex4"
+// #resource "\\" + ATRIndicator
 
 // Calculates LotSize based on balance, risk and StopLoss           
 double CalculateLotSize(double risk, int PointsSL) {
    double lotStep = SymbolInfoDouble(Symbol(), SYMBOL_VOLUME_STEP);
    double minLot = SymbolInfoDouble(Symbol(), SYMBOL_VOLUME_MIN);
-   double maxLot =  SymbolInfoDouble(Symbol(), SYMBOL_VOLUME_MAX);
+   double maxLot =  SymbolInfoDouble(Symbol(), SzYMBOL_VOLUME_MAX);
    double tickVal = SymbolInfoDouble(Symbol(), SYMBOL_TRADE_TICK_VALUE);
    double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
    double lotSize = accountBalance * risk / 100 / (PointsSL * tickVal);

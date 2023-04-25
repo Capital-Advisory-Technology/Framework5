@@ -75,8 +75,8 @@ void PositionManager::OrderOpen(ENUM_ORDER_TYPE orderType) {
 } 
 
 void PositionManager::OrderClose() {    
-    if (OrderSelect(0) == true) { 
-        ulong oticket = OrderGetTicket(0);  
-        trade.PositionClose(oticket, ULONG_MAX);
-    }
+    ulong oticket = PositionGetTicket(0);  
+    trade.PositionClose(oticket, ULONG_MAX);     
 }
+
+// OrdersTotal()
