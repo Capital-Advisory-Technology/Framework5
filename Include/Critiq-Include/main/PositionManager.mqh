@@ -7,17 +7,15 @@ class PositionManager {
 
     protected:  
         CTrade* trade;
-        float riskPerTrade;
-        float SLRatio;
-        float TPRatio;
+        double riskPerTrade;
+        double posRatio;
         
         // calculations
         int ATRPeriod;
         int slippage;
 
         // settings
-        float breakEven;
-        bool fixedSLTP;
+        double breakEven;
 
     public:
 
@@ -27,9 +25,9 @@ class PositionManager {
         void OrderOpen(ENUM_ORDER_TYPE orderType);
         void OrderClose();
 
-        void setRisk(float risk) { riskPerTrade = risk; }
-        void setRatioTP(float ratio) {} 
-        void setRatioSL(float ratio) { SLRatio = ratio; }
+        void setRisk(double risk) { riskPerTrade = risk; }
+        void setPosRatio(double ratio) { posRatio = ratio; } 
+
 };
 
 extern PositionManager *positionManager;
@@ -37,12 +35,10 @@ extern PositionManager *positionManager;
 PositionManager::PositionManager(void): 
     trade(new CTrade),
     riskPerTrade(0),
-    SLRatio(0),
-    TPRatio(0),
+    posRatio(0),
     ATRPeriod(14),
     slippage(0),
-    breakEven(0),
-    fixedSLTP(false)
+    breakEven(0)
     {}
 
 void PositionManager::~PositionManager(void) {
@@ -50,12 +46,14 @@ void PositionManager::~PositionManager(void) {
 }
 
 void PositionManager::OrderOpen(ENUM_ORDER_TYPE orderType) {
-    int PointsSL = CalculateSL_ATR(SLRatio, ATRPeriod, fixedSLTP);
-    int PointsTP = CalculateTP_Ratio(TPRatio, PointsSL, false);
-    float volume = float(CalculateLotSize(riskPerTrade, PointsSL));
-    double slPrice = GetSLprice(PointsSL, orderType);
-    double tpPrice = GetTPprice(PointsTP, orderType); 
-
+    Print("Opening order!!!");
+    Print("posRatio: ", posRatio);
+    int points = CalculatePoints_ATR(posRatio, ATRPeriod);
+    // int pointsTP = CalculateTP_Ratio(posRatio, pointsSL);
+    double volume = CalculateLotSize(riskPerTrade, points);
+    double slPrice = GetSLprice(points, orderType);
+    double tpPrice = GetTPprice(points, orderType, posRatio); 
+    Print("sl:", slPrice, " tp:", tpPrice, " vol:", volume, " type:", orderType);
     string symbol = Symbol();
     
     switch (orderType) {
@@ -78,5 +76,3 @@ void PositionManager::OrderClose() {
     ulong oticket = PositionGetTicket(0);  
     trade.PositionClose(oticket, ULONG_MAX);     
 }
-
-// OrdersTotal()

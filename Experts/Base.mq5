@@ -17,23 +17,22 @@ PositionManager *positionManager = new PositionManager;
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
-int OnInit()
-  {
-    
+int OnInit() {
+    positionManager.setPosRatio(10);
+    positionManager.setRisk(1);
     tickCount = 0;
     tradeCount = 0;
    return(INIT_SUCCEEDED);
-  }
+}
 //+------------------------------------------------------------------+
 //| Expert deinitialization function                                 |
 //+------------------------------------------------------------------+
-void OnDeinit(const int reason)
-  {
-//---
+void OnDeinit(const int reason) {
+
     Print("Total ticks: ", tickCount);
     Print("Total trades: ", tradeCount);
-    
-  }
+    delete positionManager;
+}
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
@@ -41,12 +40,12 @@ void OnTick()
   {
     switch (tickCount)
     {
-    case 6:
+    case 106:
       Print("Tick", tickCount);
       positionManager.OrderOpen(ORDER_TYPE_BUY);
       
       break;
-    case 9:
+    case 110:
       Print("Tick", tickCount);
       positionManager.OrderClose();
       break;
