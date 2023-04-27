@@ -18,9 +18,7 @@ int CalculatePoints_ATR(double posRatio, int ATRPeriod) {
 
   double atr = iATR(NULL, 0, ATRPeriod);
   points = (int)(atr * posRatio);
-  CopyBuffer()
   
-  Print(atr);
   Print(points);
 
   return points;
