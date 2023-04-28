@@ -1,22 +1,23 @@
 #include <Critiq-Include/common/Logger.mqh> 
 
+
 bool ModifyOrderSL(ulong oticket, double breakeven_price) {
+
    MqlTradeRequest request = {};
    MqlTradeResult result = {};
 
    ZeroMemory(request);
-   ZeroMemory(result);   
+   ZeroMemory(result);
 
    request.action = TRADE_ACTION_SLTP;
    request.position = oticket;
    request.symbol = Symbol(); // Might be useless
-   request.sl = breakeven_price;
+   request.sl = slPrice;
 
    if(!OrderSend(request, result)) {
       gLog.Fatal("-Breakeven modify failed-");
       return false;
    }
-     
    return true;
 }
 

@@ -6,6 +6,7 @@
 #property copyright "Critiq"
 #property link      ""
 #property version   "1.00"
+
 #property tester_indicator "GeneralizedDoubleDEMA.ex5" 
 
 #include <Critiq-Include/backend/Risk.mqh>
