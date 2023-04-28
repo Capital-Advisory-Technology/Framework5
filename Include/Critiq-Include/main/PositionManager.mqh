@@ -24,6 +24,7 @@ class PositionManager {
 
         void OrderOpen(ENUM_ORDER_TYPE orderType);
         void OrderClose();
+        bool isOrderOpen() { return PositionsTotal() != 0;};
 
         void setRisk(double risk) { riskPerTrade = risk; }
         void setPosRatio(double ratio) { posRatio = ratio; } 
