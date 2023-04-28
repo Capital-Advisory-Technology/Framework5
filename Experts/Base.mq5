@@ -34,18 +34,14 @@ int OnInit() {
     tradeCount = 0;
    return(INIT_SUCCEEDED);
 }
-//+------------------------------------------------------------------+
-//| Expert deinitialization function                                 |
-//+------------------------------------------------------------------+
+
 void OnDeinit(const int reason) {
 
     Print("Total ticks: ", tickCount);
     Print("Total trades: ", tradeCount);
     delete positionManager;
 }
-//+------------------------------------------------------------------+
-//| Expert tick function                                             |
-//+------------------------------------------------------------------+
+
 void OnTick() {
 
    switch (trendFlex.CheckCondition()) {
@@ -63,13 +59,10 @@ void OnTick() {
    }
    tickCount += 1;
   }
-//+------------------------------------------------------------------+
-//| Trade function                                                   |
-//+------------------------------------------------------------------+
-void OnTrade()
-  {
+
+void OnTrade() {
     tradeCount += 1;
-  }
+}
 //+------------------------------------------------------------------+
 
 
