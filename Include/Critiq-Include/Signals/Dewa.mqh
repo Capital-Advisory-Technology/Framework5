@@ -48,7 +48,7 @@ bool Dewa::OnTick() {
     Print("DEMA CLR: ", _dema_signal[0]);
     
     if(_dema_signal[0] == 1) {
-        OrderOpen(ORDER_TYPE_BUY);
+        if(!isOrderOpen()) OrderOpen(ORDER_TYPE_BUY);
     }
 
     return true;
