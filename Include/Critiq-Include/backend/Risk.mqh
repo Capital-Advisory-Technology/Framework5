@@ -12,7 +12,7 @@ bool ModifyOrderSL(ulong oticket, double breakeven_price) {
    request.action = TRADE_ACTION_SLTP;
    request.position = oticket;
    request.symbol = Symbol(); // Might be useless
-   request.sl = slPrice;
+   request.sl = breakeven_price;
 
    if(!OrderSend(request, result)) {
       gLog.Fatal("-Breakeven modify failed-");
