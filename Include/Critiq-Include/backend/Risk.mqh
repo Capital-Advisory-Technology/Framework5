@@ -1,6 +1,8 @@
 #include <Critiq-Include/common/Logger.mqh> 
 
-bool ModifyOrderSL(ulong oticket, double slPrice) {
+
+bool ModifyOrderSL(ulong oticket, double breakeven_price) {
+
    MqlTradeRequest request = {};
    MqlTradeResult result = {};
 
@@ -21,7 +23,7 @@ bool ModifyOrderSL(ulong oticket, double slPrice) {
 
 bool CheckForBreakEven(double breakeven) {
    double Ask = SymbolInfoDouble(Symbol(), SYMBOL_ASK);
-   double Bid = SymbolInfoDouble(Symbol(), SYMBOL_ASK);
+   double Bid = SymbolInfoDouble(Symbol(), SYMBOL_BID);
 
    if (OrderSelect(0) == true) {
       ulong oticket = OrderGetTicket(0);
