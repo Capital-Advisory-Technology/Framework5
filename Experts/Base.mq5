@@ -11,24 +11,22 @@
 
 #include <Critiq-Include/backend/Risk.mqh>
 #include <Critiq-Include/main/PositionManager.mqh>
+#include <Critiq-Include/Signals/TrendFlex2.mqh>
 
 #include <Trade\Trade.mqh>
 
-int tf_handle;
-double _tf_blue[];
-double _tf_red[];
 int tickCount;
 int tradeCount;
 
 PositionManager *positionManager = new PositionManager;
+TrendFlex *trendFlex = new TrendFlex;
+
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
 int OnInit() {
-    SetIndexBuffer(0,_tf_blue,INDICATOR_DATA);
-    SetIndexBuffer(1,_tf_red,INDICATOR_DATA);
-    ResetLastError();
-    tf_handle = iCustom(Symbol(), PERIOD_CURRENT, "Critiq-Indicators\\TrendFlex2", 24, 50);
+    
+    trendFlex.init(30, 60);
     
     positionManager.setPosRatio(10);
     positionManager.setRisk(1);
@@ -49,29 +47,20 @@ void OnDeinit(const int reason) {
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
 void OnTick() {
-  ArraySetAsSeries(_tf_blue, true);
-  ArraySetAsSeries(_tf_red, true);
-  
-  if (CopyBuffer(tf_handle,0,0,20,_tf_blue) < 0){Print("NICE"); }
-  if (CopyBuffer(tf_handle,1,0,20,_tf_red) < 0){Print("NICE"); }
-   
-  Print("CURRENT BLUE: ", _tf_blue[0], " CURRENT RED: ", _tf_red[0]);
-  Print("PREV. BLUE: ", _tf_blue[1], "PREV. RED: ", _tf_red[1]);
-  
-    // switch (tickCount)
-    // {
-    // case 106:
-    //   Print("Tick", tickCount);
-    //   positionManager.OrderOpen(ORDER_TYPE_BUY);
-      
-    //   break;
-    // case 110:
-    //   Print("Tick", tickCount);
-    //   positionManager.OrderClose();
-    //   break;
-    // default:
-    //   break;
-    // }
+
+   switch (trendFlex.CheckCondition()) {
+      case 1:
+         positionManager.OrderOpen(ORDER_TYPE_BUY);  
+         break;
+      case 2:
+         positionManager.OrderOpen(ORDER_TYPE_SELL);
+         Print("TICK COUNT: ", tickCount);
+         break;
+      default:
+         positionManager.OrderClose();
+         Print("TICK COUNT: ", tickCount);
+         break;
+   }
    tickCount += 1;
   }
 //+------------------------------------------------------------------+
