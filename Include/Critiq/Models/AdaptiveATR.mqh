@@ -1,25 +1,26 @@
-#include <Critiq-Include/Models/GenericModel.mqh>
+#include <Critiq/backend/Model.mqh>
 
-class MATR : public Model {
+class aATR : public Model {
     protected:
         int inpPeriod;
         int atr_handle;
         double _atr_signal[];
 
     public:
-        MATR(void);
-        ~MATR(void);
+        aATR(void);
+        ~aATR(void);
 
         void Init(int cPeriod);
         bool GetSignal();
+        double GetValue();
 };
 
-extern MATR *matrModel = new MATR;
+extern aATR *matrModel = new aATR;
 
-void MATR::MATR(void) : inpPeriod(14) {}
-void MATR::~MATR(void) {}
+void aATR::aATR(void) : inpPeriod(14) {}
+void aATR::~aATR(void) {}
 
-void MATR::Init(int cPeriod) {
+void aATR::Init(int cPeriod) {
     path = "Critiq-Indicators\\AdaptiveATR";
     Print("PATH: ", path);
     SetIndexBuffer(0, _atr_signal, INDICATOR_DATA);
@@ -33,12 +34,22 @@ void MATR::Init(int cPeriod) {
      }
 }
 
-bool MATR::GetSignal() {
+bool aATR::GetSignal() {
     if(CopyBuffer(atr_handle,0,0,2,_atr_signal)==2) {
         return true;
     }
     else {
         Print("Error copying buffer");
         return false;
+    }
+}
+
+double aATR::GetValue() {
+    if(CopyBuffer(atr_handle,0,0,2,_atr_signal)==2) {
+        return _atr_signal[1];
+    }
+    else {
+        Print("Error copying buffer");
+        return 0;
     }
 }

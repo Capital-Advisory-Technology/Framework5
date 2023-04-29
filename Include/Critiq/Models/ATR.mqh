@@ -1,4 +1,3 @@
-
 class ATR {
     protected:
         int atr_handle;

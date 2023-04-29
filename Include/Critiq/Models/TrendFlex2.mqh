@@ -1,4 +1,4 @@
-#include <Critiq-Include/Signals/ReturnSignal.mqh>
+#include <Critiq/Signals/ReturnSignal.mqh>
 
 class TrendFlex {    
     protected:

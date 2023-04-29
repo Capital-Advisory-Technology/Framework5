@@ -1,8 +1,8 @@
-#include <Critiq-Include/common/Logger.mqh>
-#include <Critiq-Include/main/Calculations.mqh>
+#include <Critiq/common/Logger.mqh>
+#include <Critiq/main/Calculations.mqh>
 
-#include <Critiq-Include/Models/AdaptiveATR.mqh>
-#include <Critiq-Include/Models/ATR.mqh>
+#include <Critiq/Models/AdaptiveATR.mqh>
+#include <Critiq/Models/ATR.mqh>
 
 class Risk {
     protected:
@@ -44,7 +44,7 @@ class Risk {
 };
 
 extern Risk *risk = new Risk;
-AdaptiveATR *adaptiveATR = new AdaptiveATR;
+aATR *adaptiveATR = new aATR;
 ATR *slATR = new ATR;
 
 Risk::Risk(void) : riskPerTrade(1.0), posRatio(10),
@@ -53,11 +53,11 @@ Risk::Risk(void) : riskPerTrade(1.0), posRatio(10),
                    fixed_points(NULL), sl_scaling_model(false),
                    scaling_ratio(NULL) {}
 
-void Risk::~Risk(void) {} // decon.
+void Risk::~Risk(void) {} 
 
-void Risk::initRisk(double riskPerTrade, double posRatio) {
-    riskPerTrade = riskPerTrade;
-    posRatio = posRatio;
+void Risk::initRisk(double cRiskPerTrade, double cPosRatio) {
+    riskPerTrade = cRiskPerTrade;
+    posRatio = cPosRatio;
 }
 
 void Risk::init_sl_atr(int period, double multiplier) {
@@ -88,8 +88,7 @@ void Risk::get_sl_atr(ENUM_ORDER_TYPE orderType) {
 }
 
 void Risk::init_atr_model(int period, double multiplier) {
-    adaptiveATR.init(period);
-    Print("HERE");
+    adaptiveATR.Init(period);
     this.sl_atr_model = true;
     this.atr_period = period;
     this.atr_multiplier = multiplier;
@@ -97,20 +96,12 @@ void Risk::init_atr_model(int period, double multiplier) {
 
 void Risk::get_atr_model(ENUM_ORDER_TYPE orderType) {
     Print("=================================");
-    Print("OG ATR: ", adaptiveATR.GetLast());
-    Print("NORM ATR: ", NormalizeDouble(adaptiveATR.GetLast(), _Digits));
+    Print("NORM ATR: ", NormalizeDouble(adaptiveATR.GetValue(), _Digits));
 
-    double atr_val = NormalizeDouble(adaptiveATR.GetLast() * atr_multiplier, _Digits);
-    Print("ATR val: ", atr_val);
-    
+    double atr_val = NormalizeDouble(adaptiveATR.GetValue() * atr_multiplier, _Digits);    
     volume = NormalizeDouble(CalculateLotSize(riskPerTrade, atr_val), 2);
-    Print("Lot size: ", CalculateLotSize(riskPerTrade, atr_val));
-
     slPrice = NormalizeDouble(GetSLprice(atr_val, orderType), _Digits);
-    Print("SL Price: ", GetSLprice(atr_val, orderType));
-    
     tpPrice = NormalizeDouble(GetTPprice(atr_val, orderType, posRatio), _Digits);
-    Print("TP Price: ", GetTPprice(atr_val, orderType, posRatio));
     
     Print("Volume: ", volume);
     Print("SL Price: ", slPrice);

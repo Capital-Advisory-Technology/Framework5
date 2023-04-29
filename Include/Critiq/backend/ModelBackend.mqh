@@ -1,14 +1,9 @@
-#include <Critiq-Include/main/Risk.mqh>
-#include <Critiq-Include/main/Limits.mqh>
-#include <Critiq-Include/backend/PositionManager.mqh>
-#include <Critiq-Include/Models/GenericModel.mqh>
+#include <Critiq/main/Risk.mqh>
+#include <Critiq/main/Limits.mqh>
+#include <Critiq/main/PositionManager.mqh>
+#include <Critiq/backend/Model.mqh>
 
 class ModelBackend {
-    protected:
-        // Risk *risk;
-        // Limits *limits;
-        // PositionManager *positionManager;
-
     public:
         Risk *risk;
         Limits *limits;
@@ -24,7 +19,6 @@ class ModelBackend {
         void InitModel(Model *cModel) {
             model = cModel;
         }
-
 };
 
 extern ModelBackend *modelBackend;

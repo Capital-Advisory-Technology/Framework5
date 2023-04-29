@@ -1,7 +1,7 @@
 #include <Trade/Trade.mqh>
 
-#include <Critiq-Include/main/Risk.mqh>
-#include <Critiq-Include/main/Calculations.mqh>
+#include <Critiq/main/Risk.mqh>
+#include <Critiq/main/Calculations.mqh>
 
 
 class PositionManager {
@@ -15,6 +15,7 @@ class PositionManager {
         // Order Management
         void OrderOpen(ENUM_ORDER_TYPE orderType, double volume,
                        double slPrice, double tpPrice);
+                       
         void OrderClose();
         void OrderModify(double sl, double tp);
         void OrderPartialClose(double volume);   

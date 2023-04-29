@@ -1,5 +1,6 @@
-#include <Critiq-Include/Models/ReturnSignal.mqh>
-#include <Critiq-Include/Models/GenericModel.mqh>
+#include <Critiq/backend/Model.mqh>
+
+#include <Critiq/main/ReturnSignal.mqh>
 
 class Dewa : public Model {
     protected:
@@ -19,7 +20,6 @@ class Dewa : public Model {
 
         void Init(int period, double volume, ENUM_APPLIED_PRICE price);
         ENUM_ORDER_TYPE GetSignal();
-        // int getSignal();
 
 };
 

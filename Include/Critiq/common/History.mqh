@@ -1,4 +1,4 @@
-#include <Critiq-Include/common/Structures.mqh>
+#include <Critiq/common/Structures.mqh>
 
 class HistoryManager {
     protected:
