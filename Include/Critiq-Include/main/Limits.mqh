@@ -1,5 +1,4 @@
 #include <Critiq-Include/common/Logger.mqh>
-#include <Critiq-Include/common/Logger.mqh>
 
 
 class Limits {

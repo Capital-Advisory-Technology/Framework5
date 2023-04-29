@@ -1,46 +1,50 @@
 //+------------------------------------------------------------------+
 //|                                                         Base.mq5 |
 //|                                                           Critiq |
-//|                                                                  |
 //+------------------------------------------------------------------+
 #property copyright "Critiq"
 #property link      ""
 #property version   "1.00"
 
 #property tester_indicator "GeneralizedDoubleDEMA.ex5" 
-
-#include <Critiq-Include/backend/Risk.mqh>
-#include <Critiq-Include/main/PositionManager.mqh>
-#include <Critiq-Include/Signals/Dewa.mqh>
+#property tester_indicator "AdaptiveATR.ex5"
 
 #include <Trade\Trade.mqh>
 
-int tickCount;
-int tradeCount;
+#include <Critiq-Include/Models/FooModel.mqh>
 
-Dewa *dewa = new Dewa;
+// Model params.
+input int period = 30;
+input double volume = 0.7;
+input ENUM_APPLIED_PRICE price = PRICE_CLOSE;
 
-//+------------------------------------------------------------------+
-//| Expert initialization function                                   |
-//+------------------------------------------------------------------+
+input int period_atr = 14;
+input double multiplier_atr = 1.5;  
+
+// Risk params.
+input double rpp = 1.0;
+input int posRatio = 10;
+
+FooModel *fooModel = new FooModel;
+
 int OnInit() {
-    dewa.init(20, 0.8, PRICE_CLOSE);
+    fooModel.init(period, volume, price); // Init model
+    Print("HERE1");
+    fooModel.initRisk(rpp, posRatio); // Init risk model
+    // fooModel.risk.init_atr_model(period_atr, multiplier_atr);             // Init ATR model
     
-    dewa.setPosRatio(10);
-    dewa.setRisk(1);
-    tickCount = 0;
-    tradeCount = 0;
-   return(INIT_SUCCEEDED);
+    Print("HERE2");
+    return(INIT_SUCCEEDED);
 }
 
-void OnDeinit(const int reason) {
-    Print("Total ticks: ", tickCount);
-    Print("Total trades: ", tradeCount);
-    delete positionManager;
+void OnDeinit(const int reason) { 
+    Print("Deinit");
+    delete fooModel; 
 }
 
 void OnTick() {
-   dewa.OnTick();
-}
+    Print("HERE4");
+    fooModel.OnTick();
+ }
  
 void OnTrade() { } 
