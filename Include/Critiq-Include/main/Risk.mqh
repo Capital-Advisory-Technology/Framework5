@@ -40,6 +40,7 @@ class Risk {
 };
 
 extern Risk *risk = new Risk;
+AdaptiveATR *adaptiveATR = new AdaptiveATR;
 
 Risk::Risk(void) : riskPerTrade(1.0), posRatio(10),
                    sl_atr_model(true), atr_period(14),
@@ -55,8 +56,6 @@ void Risk::initRisk(double riskPerTrade, double posRatio) {
 }
 
 void Risk::init_atr_model(int period, double multiplier) {
-    AdaptiveATR *adaptiveATR = new AdaptiveATR;
-    
     adaptiveATR.init(period);
     Print("HERE");
     this.sl_atr_model = true;
@@ -65,9 +64,19 @@ void Risk::init_atr_model(int period, double multiplier) {
 }
 
 void Risk::get_atr_model(ENUM_ORDER_TYPE orderType) {
-    int atr_val = adaptiveATR.GetLast() * atr_multiplier;;
-    volume = CalculateLotSize(riskPerTrade, atr_val);
-    slPrice = GetSLprice(atr_val, orderType);
-    tpPrice = GetTPprice(atr_val, orderType, posRatio);
+    Print("GetFirst: ", adaptiveATR.GetLast());
+    Print("GetLast: ", NormalizeDouble(adaptiveATR.GetLast(), _Digits));
+    double atr_val = NormalizeDouble(adaptiveATR.GetLast() * atr_multiplier, _Digits);
+    Print("ATR val: ", atr_val);
+    // int atr_points = atr_val / _Point;
+    // Print("ATR points: ", atr_points);
+    // Print("Pips: ", _Point);
+    volume = NormalizeDouble(CalculateLotSize(riskPerTrade, atr_val), 2);
+    slPrice = NormalizeDouble(GetSLprice(atr_val, orderType), _Digits);
+    tpPrice = NormalizeDouble(GetTPprice(atr_val, orderType, posRatio), _Digits);
+    Print("Volume: ", volume);
+    Print("SL Price: ", slPrice);
+    Print("TP Price: ", tpPrice);
+    Print("=================================");
 }
 

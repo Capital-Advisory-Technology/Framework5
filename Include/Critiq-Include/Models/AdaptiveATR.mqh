@@ -35,7 +35,5 @@ void AdaptiveATR::init(int period) {
 
 double AdaptiveATR::GetLast() {
     CopyBuffer(atr_handle,0,0,2,_atr_signal);
-    Print("ATR Prev.: ", _atr_signal[0]);
-    
     return _atr_signal[0];
 }
