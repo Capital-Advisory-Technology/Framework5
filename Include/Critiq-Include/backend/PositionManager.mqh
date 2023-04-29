@@ -31,19 +31,19 @@ void PositionManager::~PositionManager(void) {
     delete trade;
 }
 
-void PositionManager::OrderOpen(ENUM_ORDER_TYPE orderType, double volume,
+void PositionManager::OrderOpen(ENUM_ORDER_TYPE orderType, double cVolume,
                                 double slPrice, double tpPrice) {
     Print("Opening order!!!");
     string symbol = Symbol();
     
     switch (orderType) {
     case (ORDER_TYPE_BUY):
-        trade.PositionOpen(symbol, orderType, volume,
+        trade.PositionOpen(symbol, orderType, cVolume,
                             SymbolInfoDouble(symbol, SYMBOL_ASK),
                              slPrice, tpPrice, "Hello, Casino!");
         break;
     case (ORDER_TYPE_SELL):
-        trade.PositionOpen(symbol, orderType, volume,
+        trade.PositionOpen(symbol, orderType, cVolume,
                             SymbolInfoDouble(symbol, SYMBOL_BID),
                             slPrice, tpPrice, "Hello, gay bear!");
         break;
@@ -62,7 +62,7 @@ void PositionManager::OrderClose() {
     trade.PositionClose(oticket, ULONG_MAX);     
 }
 
-void PositionManager::OrderPartialClose(double volume) {
+void PositionManager::OrderPartialClose(double cVolume) {
     ulong oticket = PositionGetTicket(0);  
-    trade.PositionClose(oticket, volume);     
+    trade.PositionClose(oticket, 0);     
 }

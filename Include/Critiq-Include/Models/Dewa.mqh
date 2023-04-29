@@ -29,8 +29,7 @@ void Dewa::Dewa(void) : inpPeriod(14),
                         inpPrice(PRICE_CLOSE) {}
 void Dewa::~Dewa(void) {}
 
-void Dewa::init(int period, double volume, ENUM_APPLIED_PRICE price) {
-    Print("HERE19");
+void Dewa::init(int cPeriod, double cVolume, ENUM_APPLIED_PRICE ePrice) {
     // SetIndexBuffer(0, _dema_price, INDICATOR_DATA);
     SetIndexBuffer(1, _dema_signal, INDICATOR_COLOR_INDEX);
     ResetLastError();
@@ -38,7 +37,7 @@ void Dewa::init(int period, double volume, ENUM_APPLIED_PRICE price) {
     ArraySetAsSeries(_dema_signal, true);
 
     dema_handle = iCustom(NULL, 0, 
-    "Critiq-Indicators\\GeneralizedDoubleDEMA", period, volume, price);
+    "Critiq-Indicators\\GeneralizedDoubleDEMA", cPeriod, cVolume, ePrice);
 }
 
 bool Dewa::OnTick() {

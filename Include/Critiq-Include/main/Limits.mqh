@@ -21,12 +21,17 @@ class Limits {
         Limits(void);
         ~Limits(void);
 
-        void InitLossLimit(double cLossPercent, int hours);
+        void InitDailyLoss(double cLossPercent);
+        void InitWeeklyLoss(double cLossPercent);
+        
+        void InitSession() {};
 
-        bool LossLimit();
-        bool CountLimit();
-        bool SessionLimit();
-        bool DayOfWeekLimit();
+        // void InitLossLimit(double cLossPercent, int hours);
+
+        // bool LossLimit();
+        // bool CountLimit();
+        // bool SessionLimit();
+        // bool DayOfWeekLimit();
 
         bool getLimits();
 
@@ -47,53 +52,9 @@ Limits::~Limits(void)
 {
 }
 
-void Limits::InitLossLimit(double cLossPercent, int hours) {
-    lossLimit = true;
-    lossPercent = cLossPercent;
-    lossHours = hours;
 
-    Print("Loss limit set to: ", lossPercent, " in ", lossHours, " hours");
-}
-
-bool Limits::LossLimit() {
-    // Checks if in defined period of time the loss is greater than the limit
-    return false;
-}
-
-
-bool Limits::CountLimit() {
-    // Checks if in defined period of time the number of trades is greater than the limit
-    return false;
-}
-
-bool Limits::SessionLimit() {
-    // Checks if in defined period of time the session is greater than the limit
-    return false;
-}
-
-bool Limits::DayOfWeekLimit() {
-    // Checks if in defined period of time the day of the week is greater than the limit
-    return false;
-}
 
 bool Limits::getLimits() {
-    if (lossLimit) {
-        if (LossLimit()) {
-            return true;
-        }
-    } else if (countLimit) {
-        if (CountLimit()) {
-            return true;
-        }
-    } else if (sessionLimit) {
-        if (SessionLimit()) {
-            return true;
-        }
-    } else if (dayOfWeekLimit) {
-        if (DayOfWeekLimit()) {
-            return true;
-        }
-    }
-
+    
     return false;
 }
