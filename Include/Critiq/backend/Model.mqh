@@ -1,14 +1,11 @@
-class ModelInputs {
-    protected:
-        string modelName;
-    
-    public:
-        virtual void Init() = 0;
-};
-
-
 class Model {
+    protected:
+        string path;
+
     public:
-        virtual bool Init(ModelInputs &modelInputs) = 0;
-        virtual ENUM_ORDER_TYPE GetSignal() = 0;
+        Model(void){};
+        ~Model(void){};
+
+        void Init();
+        ENUM_ORDER_TYPE GetSignal(){ return true;}
 };
