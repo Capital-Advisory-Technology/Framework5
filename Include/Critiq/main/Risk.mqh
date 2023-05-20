@@ -44,7 +44,7 @@ class Risk {
 };
 
 extern Risk *risk = new Risk;
-aATR *adaptiveATR = new aATR;
+// aATR *adaptiveATR = new aATR;
 ATR *slATR = new ATR;
 
 Risk::Risk(void) : riskPerTrade(1.0), posRatio(10),
@@ -87,25 +87,25 @@ void Risk::get_sl_atr(ENUM_ORDER_TYPE orderType) {
     Print("=================================");
 }
 
-void Risk::init_atr_model(int period, double multiplier) {
-    adaptiveATR.Init(period);
-    this.sl_atr_model = true;
-    this.atr_period = period;
-    this.atr_multiplier = multiplier;
-}
+// void Risk::init_atr_model(int period, double multiplier) {
+//     adaptiveATR.Init(period);
+//     this.sl_atr_model = true;
+//     this.atr_period = period;
+//     this.atr_multiplier = multiplier;
+// }
 
-void Risk::get_atr_model(ENUM_ORDER_TYPE orderType) {
-    Print("=================================");
-    Print("NORM ATR: ", NormalizeDouble(adaptiveATR.GetValue(), _Digits));
+// void Risk::get_atr_model(ENUM_ORDER_TYPE orderType) {
+//     Print("=================================");
+//     Print("NORM ATR: ", NormalizeDouble(adaptiveATR.GetValue(), _Digits));
 
-    double atr_val = NormalizeDouble(adaptiveATR.GetValue() * atr_multiplier, _Digits);    
-    volume = NormalizeDouble(CalculateLotSize(riskPerTrade, atr_val), 2);
-    slPrice = NormalizeDouble(GetSLprice(atr_val, orderType), _Digits);
-    tpPrice = NormalizeDouble(GetTPprice(atr_val, orderType, posRatio), _Digits);
+//     double atr_val = NormalizeDouble(adaptiveATR.GetValue() * atr_multiplier, _Digits);    
+//     volume = NormalizeDouble(CalculateLotSize(riskPerTrade, atr_val), 2);
+//     slPrice = NormalizeDouble(GetSLprice(atr_val, orderType), _Digits);
+//     tpPrice = NormalizeDouble(GetTPprice(atr_val, orderType, posRatio), _Digits);
     
-    Print("Volume: ", volume);
-    Print("SL Price: ", slPrice);
-    Print("TP Price: ", tpPrice);
-    Print("=================================");
-}
+//     Print("Volume: ", volume);
+//     Print("SL Price: ", slPrice);
+//     Print("TP Price: ", tpPrice);
+//     Print("=================================");
+// }
 

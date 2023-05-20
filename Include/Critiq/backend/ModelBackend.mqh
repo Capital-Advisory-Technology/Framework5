@@ -2,13 +2,17 @@
 #include <Critiq/main/Limits.mqh>
 #include <Critiq/main/PositionManager.mqh>
 #include <Critiq/backend/Model.mqh>
+#include <Critiq/Models/Dewa.mqh>
 
 class ModelBackend {
+    protected:
+        Model* model;
+        
     public:
         Risk *risk;
         Limits *limits;
         PositionManager *positionManager;
-        Model *model;
+        
 
         ModelBackend(void);
         ~ModelBackend(void);
@@ -16,9 +20,7 @@ class ModelBackend {
         void Init();
         void OnTick();
 
-        void InitModel(Model *cModel) {
-            model = cModel;
-        }
+        void InitModel(string modelName);
 };
 
 extern ModelBackend *modelBackend;
@@ -30,9 +32,7 @@ ModelBackend::ModelBackend(void):
 
 ModelBackend::~ModelBackend(void) {}
 
-void ModelBackend::Init() {
-    
-}
+void ModelBackend::Init() {}
 
 void ModelBackend::OnTick() {
      if (!limits.getLimits()) {
@@ -58,4 +58,14 @@ void ModelBackend::OnTick() {
         }
     }
     
+}
+
+
+void ModelBackend::InitModel(string modelName) {
+    if(modelName == "dewa") {
+        model = new Dewa;
+    }
+    // } else if(modelName == "AdaptiveATR") {
+    //     model = new AdaptiveATR;
+    // }
 }
