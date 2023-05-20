@@ -61,3 +61,11 @@ bool CheckForAboveZeroLine(double buy, double buyPrev) {
 bool CheckForBelowZeroLine(double sell, double sellPrev) {
    return sell < 0 && sellPrev > 0;
 }  
+
+bool BuySignalCrossover(double current_signal, double prev_signal) {
+   return current_signal == 1 && prev_signal == 2;
+}
+
+bool SellSignalCrossover(double current_signal, double prev_signal) {
+   return current_signal == 2 && prev_signal == 1;
+}

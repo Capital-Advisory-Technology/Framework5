@@ -7,5 +7,5 @@ class Model {
         ~Model(void){};
 
         void Init();
-        ENUM_ORDER_TYPE GetSignal(){ return true;}
+        virtual ENUM_ORDER_TYPE GetSignal() { return 0; }
 };

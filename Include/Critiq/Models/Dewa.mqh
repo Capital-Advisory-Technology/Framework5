@@ -1,26 +1,25 @@
 #include <Critiq/backend/Model.mqh>
-
 #include <Critiq/main/ReturnSignal.mqh>
 
 class Dewa : public Model {
     protected:
         int dema_handle;
-        int waddah_handle;
+        // double _dema_signal[];
 
         int inpPeriod;
         double inpVolume;
         ENUM_APPLIED_PRICE inpPrice;
-        
-        double _dema_price[];
-        double _dema_signal[];
 
+        ENUM_ORDER_TYPE SimpleSignal();
+        ENUM_ORDER_TYPE CrossoverSignal();
+    
     public:
         Dewa(void);
         ~Dewa(void);
 
         void Init(int period, double volume, ENUM_APPLIED_PRICE price);
-        ENUM_ORDER_TYPE GetSignal();
-
+        virtual ENUM_ORDER_TYPE GetSignal();
+        
 };
 
 extern Dewa *dewa = new Dewa;
@@ -32,20 +31,49 @@ void Dewa::~Dewa(void) {}
 
 void Dewa::Init(int cPeriod, double cVolume, ENUM_APPLIED_PRICE ePrice) {
     path = "Critiq-Indicators\\GeneralizedDoubleDEMA";
-
-    SetIndexBuffer(1, _dema_signal, INDICATOR_COLOR_INDEX);
-    ResetLastError();
-    ArraySetAsSeries(_dema_signal, true);
     dema_handle = iCustom(NULL, 0, path, cPeriod, cVolume, ePrice);
 }
 
 ENUM_ORDER_TYPE Dewa::GetSignal() {
+    double _dema_signal[];
+
+    ResetLastError();
+    ArraySetAsSeries(_dema_signal, true);
     CopyBuffer(dema_handle,1,0,5,_dema_signal);
 
-    if(_dema_signal[0] == 1) {
-        return ORDER_TYPE_BUY;
-    } else if(_dema_signal[0] == 2) 
-        return ORDER_TYPE_SELL;
+    Print("Current: ", _dema_signal[1], " Previous: ", _dema_signal[2]);
 
-    return false;
+    if(_dema_signal[1] == 1.0 && _dema_signal[2] == 2.0) {
+        return ORDER_TYPE_BUY;
+    } else if(_dema_signal[1] == 2.0 && _dema_signal[2] == 1.0) {
+        return ORDER_TYPE_SELL;
+    } 
+    
+    return ORDER_TYPE_CLOSE_BY;    
 }
+
+// ENUM_ORDER_TYPE Dewa::SimpleSignal() {
+//     CopyBuffer(dema_handle,1,0,5,_dema_signal);
+
+//     if(_dema_signal[0] == 1) {
+//         return ORDER_TYPE_BUY;
+//     } else if(_dema_signal[0] == 2) 
+//         return ORDER_TYPE_SELL;
+    
+//     return NULL;
+// }
+
+// ENUM_ORDER_TYPE Dewa::CrossoverSignal() {
+//     CopyBuffer(dema_handle,1,0,5,_dema_signal);
+
+//     Print("Current: ", _dema_signal[0], " Previous: ", _dema_signal[1]);
+//     if(BuySignalCrossover(_dema_signal[0], _dema_signal[1])) {
+//         Print("DEWA BUY SIGNAL");
+//         return ORDER_TYPE_BUY;
+//     } else if(SellSignalCrossover(_dema_signal[0], _dema_signal[1])) {
+//         Print("DEWA SELL SIGNAL");
+//         return ORDER_TYPE_SELL;
+//     }
+
+//     return NULL;
+// }

@@ -2,23 +2,24 @@
 #include <Critiq/main/Limits.mqh>
 #include <Critiq/main/PositionManager.mqh>
 #include <Critiq/backend/Model.mqh>
+#include <Critiq/Models/Dewa.mqh>
 
 class ModelBackend {
+    protected:
+        Model *model;
+        
     public:
         Risk *risk;
         Limits *limits;
         PositionManager *positionManager;
-        Model *model;
-
+        
         ModelBackend(void);
         ~ModelBackend(void);
 
         void Init();
         void OnTick();
 
-        void InitModel(Model *cModel) {
-            model = cModel;
-        }
+        void setModel(Model *cModel) { model = cModel; }
 };
 
 extern ModelBackend *modelBackend;
@@ -30,9 +31,7 @@ ModelBackend::ModelBackend(void):
 
 ModelBackend::~ModelBackend(void) {}
 
-void ModelBackend::Init() {
-    
-}
+void ModelBackend::Init() {}
 
 void ModelBackend::OnTick() {
      if (!limits.getLimits()) {
@@ -56,6 +55,5 @@ void ModelBackend::OnTick() {
                     risk.get_tpPrice());
             }
         }
-    }
-    
+    }   
 }
