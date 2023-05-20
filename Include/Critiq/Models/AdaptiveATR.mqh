@@ -11,7 +11,7 @@ class aATR : public Model {
         ~aATR(void);
 
         void Init(int cPeriod);
-        bool GetSignal();
+        // bool GetSignal();
         double GetValue();
 };
 
@@ -34,15 +34,15 @@ void aATR::Init(int cPeriod) {
      }
 }
 
-bool aATR::GetSignal() {
-    if(CopyBuffer(atr_handle,0,0,2,_atr_signal)==2) {
-        return true;
-    }
-    else {
-        Print("Error copying buffer");
-        return false;
-    }
-}
+// bool aATR::GetSignal() {
+//     if(CopyBuffer(atr_handle,0,0,2,_atr_signal)==2) {
+//         return true;
+//     }
+//     else {
+//         Print("Error copying buffer");
+//         return false;
+//     }
+// }
 
 double aATR::GetValue() {
     if(CopyBuffer(atr_handle,0,0,2,_atr_signal)==2) {

@@ -70,21 +70,10 @@ void Risk::init_sl_atr(int period, double multiplier) {
 
 void Risk::get_sl_atr(ENUM_ORDER_TYPE orderType) {
     double atr_val = NormalizeDouble(slATR.GetLast(), _Digits);
-    Print("ATR val: ", atr_val);
     
     volume = NormalizeDouble(CalculateLotSize(riskPerTrade, atr_val), 2);
-    Print("Lot size: ", CalculateLotSize(riskPerTrade, atr_val));
-
     slPrice = NormalizeDouble(GetSLprice(atr_val, orderType), _Digits+1);
-    Print("SL Price: ", GetSLprice(atr_val, orderType));
-    
     tpPrice = NormalizeDouble(GetTPprice(atr_val, orderType, posRatio), _Digits+1);
-    Print("TP Price: ", GetTPprice(atr_val, orderType, posRatio));
-    
-    Print("Volume: ", volume);
-    Print("SL Price: ", slPrice);
-    Print("TP Price: ", tpPrice);
-    Print("=================================");
 }
 
 void Risk::init_atr_model(int period, double multiplier) {
@@ -95,17 +84,9 @@ void Risk::init_atr_model(int period, double multiplier) {
 }
 
 void Risk::get_atr_model(ENUM_ORDER_TYPE orderType) {
-    Print("=================================");
-    Print("NORM ATR: ", NormalizeDouble(adaptiveATR.GetValue(), _Digits));
-
     double atr_val = NormalizeDouble(adaptiveATR.GetValue() * atr_multiplier, _Digits);    
     volume = NormalizeDouble(CalculateLotSize(riskPerTrade, atr_val), 2);
     slPrice = NormalizeDouble(GetSLprice(atr_val, orderType), _Digits);
     tpPrice = NormalizeDouble(GetTPprice(atr_val, orderType, posRatio), _Digits);
-    
-    Print("Volume: ", volume);
-    Print("SL Price: ", slPrice);
-    Print("TP Price: ", tpPrice);
-    Print("=================================");
 }
 

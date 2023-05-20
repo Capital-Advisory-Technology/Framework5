@@ -1,8 +1,8 @@
 #include <Critiq/main/Risk.mqh>
 #include <Critiq/main/Limits.mqh>
 #include <Critiq/main/PositionManager.mqh>
+
 #include <Critiq/backend/Model.mqh>
-#include <Critiq/Models/Dewa.mqh>
 
 class ModelBackend {
     protected:

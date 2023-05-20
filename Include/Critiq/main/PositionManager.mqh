@@ -12,7 +12,6 @@ class PositionManager {
         PositionManager(void);
         ~PositionManager(void);
 
-        // Order Management
         void OrderOpen(ENUM_ORDER_TYPE orderType, double volume,
                        double slPrice, double tpPrice);
                        
@@ -20,33 +19,31 @@ class PositionManager {
         void OrderModify(double sl, double tp);
         void OrderPartialClose(double volume);   
 
-        // Order func.
         bool isOrderOpen() { return PositionsTotal() != 0;};
 };
 
 extern PositionManager *positionManager = new PositionManager;
 
-PositionManager::PositionManager(void): 
-                                        trade(new CTrade) {}
+PositionManager::PositionManager(void): trade(new CTrade) {}
+
 void PositionManager::~PositionManager(void) {
     delete trade;
 }
 
 void PositionManager::OrderOpen(ENUM_ORDER_TYPE orderType, double cVolume,
                                 double slPrice, double tpPrice) {
-    Print("Opening order!!!");
     string symbol = Symbol();
     
     switch (orderType) {
     case (ORDER_TYPE_BUY):
         trade.PositionOpen(symbol, orderType, cVolume,
                             SymbolInfoDouble(symbol, SYMBOL_ASK),
-                             slPrice, tpPrice, "Hello, Casino!");
+                             slPrice, tpPrice, "");
         break;
     case (ORDER_TYPE_SELL):
         trade.PositionOpen(symbol, orderType, cVolume,
                             SymbolInfoDouble(symbol, SYMBOL_BID),
-                            slPrice, tpPrice, "Hello, gay bear!");
+                            slPrice, tpPrice, "");
         break;
     default:
         break;
