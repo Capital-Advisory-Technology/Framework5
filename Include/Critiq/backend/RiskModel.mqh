@@ -1,3 +1,10 @@
+struct OpenTradeParams {
+    ENUM_ORDER_TYPE type;
+    double volume;
+    double slPrice;
+    double tpPrice;
+};
+
 class RiskModel {
     protected:
         string path;
@@ -7,5 +14,5 @@ class RiskModel {
         ~RiskModel(void){};
 
         void Init();
-        virtual double GetValue() { return 0; }
+        virtual OpenTradeParams CalcTradeParams(ENUM_ORDER_TYPE orderType)=0;
 };

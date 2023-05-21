@@ -9,8 +9,8 @@ class ModelBackend {
         
     public:
 
-        ModelBackend(void){};
-        ~ModelBackend(void){};
+        ModelBackend(void);
+        ~ModelBackend(void);
 
         void OnTick();
         void setModel(Model *cModel) { model = cModel; }
@@ -19,13 +19,17 @@ class ModelBackend {
 
 extern ModelBackend *modelBackend;
 
+void ModelBackend::ModelBackend(void) {}
+void ModelBackend::~ModelBackend(void) {
+    delete model;
+    delete riskModel;
+}
+
 void ModelBackend::OnTick() {
     ENUM_ORDER_TYPE signal = model.GetSignal();
-    if (signal == ORDER_TYPE_BUY) {
-        Print("MB: BUY");
-        riskModel.GetValue();
-    } else if (signal == ORDER_TYPE_SELL) {
-        Print("MB: SELL");
-        riskModel.GetValue();
+
+    if (signal == ORDER_TYPE_BUY || signal == ORDER_TYPE_SELL) {
+        Print("MODEL: ", signal);
+        riskModel.CalcTradeParams(signal);
     }
 }

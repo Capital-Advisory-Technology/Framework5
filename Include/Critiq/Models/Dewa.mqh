@@ -1,5 +1,4 @@
 #include <Critiq/backend/Model.mqh>
-#include <Critiq/main/ReturnSignal.mqh>
 
 class Dewa : public Model {
     protected:
@@ -27,7 +26,9 @@ extern Dewa *dewa = new Dewa;
 void Dewa::Dewa(void) : inpPeriod(14),
                         inpVolume(0.7),
                         inpPrice(PRICE_CLOSE) {}
-void Dewa::~Dewa(void) {}
+void Dewa::~Dewa(void) {
+    IndicatorRelease(dema_handle);
+}
 
 void Dewa::Init(int cPeriod, double cVolume, ENUM_APPLIED_PRICE ePrice) {
     path = "Critiq-Indicators\\GeneralizedDoubleDEMA";
