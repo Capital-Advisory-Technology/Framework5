@@ -43,14 +43,17 @@ double ATR::GetValue() {
 
 OpenTradeParams ATR::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
     double atr_value = GetValue();
-    Print("ATR: ", atr_value);
-    Print("ATR * Points: ", atr_value / _Point);
-    
+
+    // THESE VALUES WILL COME FROM INPUTS
+    double rpp = 1.0;
+    double tpRatio = 2.0;
+    // -----------------------------------
+
     OpenTradeParams params;
     params.type = ORDER_TYPE_BUY;
-    params.volume = 0.01;
-    params.slPrice = 0.0;
-    params.tpPrice = 0.0;
-    Print("Params: ", params.type, " ", params.volume, " ", params.slPrice, " ", params.tpPrice);
+    params.volume = CalculateLotSize(rpp, atr_value);
+    params.slPrice = GetSLprice(atr_value, params.type);
+    params.tpPrice = GetTPprice(atr_value, params.type, tpRatio);
+    Print("Type: ", params.type, " Volume: ", params.volume, " SL: ", params.slPrice, " TP: ", params.tpPrice);
     return params;
 }

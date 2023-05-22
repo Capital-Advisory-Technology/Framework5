@@ -17,8 +17,7 @@ int OnInit() {
     return(INIT_SUCCEEDED);
 }
 
-void OnDeinit(const int reason)
-{
+void OnDeinit(const int reason) {
     delete modelBackend;
 }
 
