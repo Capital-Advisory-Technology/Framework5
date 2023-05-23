@@ -7,12 +7,22 @@ struct OpenTradeParams {
 
 class RiskModel {
     protected:
-        string path;
+        double rpp;
+        double posRatio;
 
     public:
-        RiskModel(void){};
-        ~RiskModel(void){};
+        RiskModel(void);
+        ~RiskModel(void);
 
-        void Init();
+        void InitDefault(double cRpp, double cPosRatio) {
+            rpp = cRpp;
+            posRatio = cPosRatio;
+        };
+
         virtual OpenTradeParams CalcTradeParams(ENUM_ORDER_TYPE orderType)=0;
 };
+
+RiskModel::RiskModel(void) : rpp(1.0),
+                             posRatio(10) {}
+
+RiskModel::~RiskModel(void) {}
