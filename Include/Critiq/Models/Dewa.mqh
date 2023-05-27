@@ -32,7 +32,9 @@ class Dewa : public Model {
 
 extern Dewa *dewa = new Dewa;
 
-void Dewa::Dewa(void) : inpPeriod(14), inpVolume(0.7), inpPrice(PRICE_CLOSE)
+void Dewa::Dewa(void) : inpPeriod(14), inpVolume(0.7), inpPrice(PRICE_CLOSE),
+                        inp_price(Close), inp_sensitivity(150), inp_fastlength(20), inp_slowlength(40),
+                        inp_bblength(20), inp_bbstdev(2), inp_smoothyesno(Yes)
                         {}
 
 void Dewa::~Dewa(void) {
@@ -43,9 +45,9 @@ void Dewa::~Dewa(void) {
 void Dewa::Init(int period, double volume, ENUM_APPLIED_PRICE price,
                 ENUM_PRICE_DERIVATIVE inp_price, int inp_sensitivity, int inp_fastlength,
                 int inp_slowlength, int inp_bblength, double inp_bbstdev, ENUM_YES_NO inp_smoothyesno) {
-                    
+
     path = "Critiq-Indicators\\GeneralizedDoubleDEMA";
-    dema_handle = iCustom(NULL, 0, path, cPeriod, cVolume, ePrice);
+    dema_handle = iCustom(NULL, 0, path, period, volume, price);
 
     waddah_handle = iCustom(NULL, 0, "Critiq-Indicators\\modified_explosion", inp_price, inp_sensitivity,
                             inp_fastlength, inp_slowlength, inp_bblength, inp_bbstdev, inp_smoothyesno);
@@ -63,7 +65,7 @@ ENUM_ORDER_TYPE Dewa::GetSignal() {
     ArraySetAsSeries(_waddah_colour, true);
 
     CopyBuffer(dema_handle,1,0,5,_dema_signal);
-    CopyBuffer(waddah_colour, 1, 0, 5, _waddah_colour);
+    // CopyBuffer(waddah_colour, 1, 0, 5, _waddah_colour);
     // waddah baseline (2)
     // waddah deadzone (3)
 
