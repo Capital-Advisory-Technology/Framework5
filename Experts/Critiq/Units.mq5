@@ -18,7 +18,7 @@ ATR *atr = new ATR;
 
 int OnInit() {
 
-    atr.InitDefault(rpp, pos_ratio); // THIS IS THE LINE THAT CAUSES THE ERROR
+    atr.InitDefault(rpp, pos_ratio);
     atr.InitParams(atr_period, atr_multiplier);
     dewa.Init(dewa_period, dewa_volume, dewa_price);
 
