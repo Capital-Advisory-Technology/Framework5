@@ -1,6 +1,7 @@
 struct OpenTradeParams {
     ENUM_ORDER_TYPE type;
     double volume;
+    double openPrice;
     double slPrice;
     double tpPrice;
 };
@@ -9,6 +10,10 @@ class RiskModel {
     protected:
         double rpp;
         double posRatio;
+
+        double CalcRPP() {
+            return rpp;
+        }
 
     public:
         RiskModel(void);

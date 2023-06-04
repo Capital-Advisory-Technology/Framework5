@@ -1,4 +1,6 @@
-// Calculates LotSize based on balance, risk and StopLoss           
+// Calculates LotSize based on balance, risk and StopLoss
+#include <Critiq/backend/RiskModel.mqh>
+
 double CalculateLotSize(double calc_risk, double slPips) {
    double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
    double minLot = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
@@ -6,21 +8,20 @@ double CalculateLotSize(double calc_risk, double slPips) {
    double tickVal = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
    double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
    double lotSize = accountBalance * calc_risk / 100 / (slPips / _Point * tickVal);
-   return MathMin(maxLot, MathMax(minLot,NormalizeDouble(lotSize / lotStep, 0) * lotStep));
+   return MathMin(maxLot, MathMax(minLot, NormalizeDouble(lotSize / lotStep, 0) * lotStep));
 }
 
 double GetSLprice(double priceDelta, int orderType) {
    double price = .0;
 
-   switch(orderType)
-     {
+   switch(orderType) {
       case ORDER_TYPE_BUY:
          price = NormalizeDouble(SymbolInfoDouble(_Symbol, SYMBOL_ASK) - priceDelta, _Digits);
          break;
       case ORDER_TYPE_SELL:
          price = NormalizeDouble(SymbolInfoDouble(_Symbol, SYMBOL_BID) + priceDelta, _Digits);
          break;
-     }
+   }
    return price;
 }
 
@@ -28,15 +29,13 @@ double GetTPprice(double priceDelta, int orderType, double ratio) {
    double price = .0;
    priceDelta = priceDelta * ratio;
 
-   switch(orderType)
-     {
+   switch(orderType) {
       case ORDER_TYPE_BUY:
          price = NormalizeDouble(SymbolInfoDouble(_Symbol, SYMBOL_ASK) + priceDelta, _Digits);
          break;
       case ORDER_TYPE_SELL:
          price = NormalizeDouble(SymbolInfoDouble(_Symbol, SYMBOL_BID) - priceDelta, _Digits);
          break;
-     }
+   }
    return price;
 }
-

@@ -43,9 +43,10 @@ double ATR::GetValue() {
 
 OpenTradeParams ATR::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
     double atr_value = GetValue();
-
+    double riskPerTrade = CalcRPP();
+    
     OpenTradeParams params;
-    params.type = ORDER_TYPE_BUY;
+    params.type = orderType;
     params.volume = CalculateLotSize(rpp, atr_value);
     params.slPrice = GetSLprice(atr_value, params.type);
     params.tpPrice = GetTPprice(atr_value, params.type, posRatio);

@@ -26,10 +26,14 @@ void ModelBackend::~ModelBackend(void) {
 }
 
 void ModelBackend::OnTick() {
-    ENUM_ORDER_TYPE signal = model.GetSignal();
-
-    if (signal == ORDER_TYPE_BUY || signal == ORDER_TYPE_SELL) {
-        Print("MODEL: ", signal);
-        riskModel.CalcTradeParams(signal);
+    if (!positionManager.isOrderOpen()) {
+        // Limits come here
+        ENUM_ORDER_TYPE signal = model.GetSignal();
+        if (signal == ORDER_TYPE_BUY || signal == ORDER_TYPE_SELL) {
+            Print("MODEL: ", signal);
+            OpenTradeParams params = riskModel.CalcTradeParams(signal);
+            Print("Type: ", params.type, "volume: ", params.volume, "sl: ", params.slPrice, "tp: ", params.tpPrice);
+            positionManager.OrderOpen(params);
+        }
     }
 }

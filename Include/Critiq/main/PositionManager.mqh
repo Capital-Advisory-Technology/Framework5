@@ -1,6 +1,7 @@
 #include <Trade/Trade.mqh>
 
 #include <Critiq/main/Risk.mqh>
+#include <Critiq/backend/RiskModel.mqh>
 #include <Critiq/main/Calculations.mqh>
 
 
@@ -12,8 +13,7 @@ class PositionManager {
         PositionManager(void);
         ~PositionManager(void);
 
-        void OrderOpen(ENUM_ORDER_TYPE orderType, double volume,
-                       double slPrice, double tpPrice);
+        void OrderOpen(OpenTradeParams &params);
                        
         void OrderClose();
         void OrderModify(double sl, double tp);
@@ -30,25 +30,43 @@ void PositionManager::~PositionManager(void) {
     delete trade;
 }
 
-void PositionManager::OrderOpen(ENUM_ORDER_TYPE orderType, double cVolume,
-                                double slPrice, double tpPrice) {
+void PositionManager::OrderOpen(OpenTradeParams &params) {
     string symbol = Symbol();
     
-    switch (orderType) {
+    switch (params.type) {
     case (ORDER_TYPE_BUY):
-        trade.PositionOpen(symbol, orderType, cVolume,
+        trade.PositionOpen(symbol, params.type, params.volume,
                             SymbolInfoDouble(symbol, SYMBOL_ASK),
-                             slPrice, tpPrice, "");
+                             params.slPrice, params.tpPrice, "");
         break;
     case (ORDER_TYPE_SELL):
-        trade.PositionOpen(symbol, orderType, cVolume,
+        trade.PositionOpen(symbol, params.type, params.volume,
                             SymbolInfoDouble(symbol, SYMBOL_BID),
-                            slPrice, tpPrice, "");
+                            params.slPrice, params.tpPrice, "");
         break;
     default:
         break;
     }
-} 
+}
+// void PositionManager::OrderOpen(ENUM_ORDER_TYPE orderType, double cVolume,
+//                                 double slPrice, double tpPrice) {
+//     string symbol = Symbol();
+    
+//     switch (orderType) {
+//     case (ORDER_TYPE_BUY):
+//         trade.PositionOpen(symbol, orderType, cVolume,
+//                             SymbolInfoDouble(symbol, SYMBOL_ASK),
+//                              slPrice, tpPrice, "");
+//         break;
+//     case (ORDER_TYPE_SELL):
+//         trade.PositionOpen(symbol, orderType, cVolume,
+//                             SymbolInfoDouble(symbol, SYMBOL_BID),
+//                             slPrice, tpPrice, "");
+//         break;
+//     default:
+//         break;
+//     }
+// } 
 
 void PositionManager::OrderModify(double sl, double tp) {
     ulong oticket = PositionGetTicket(0);  
