@@ -11,20 +11,11 @@ class RiskModel {
         double rpp;
         double posRatio;
 
-        double CalcRPP() {
-            return rpp;
-        }
-
     public:
         RiskModel(void);
         ~RiskModel(void);
 
-        void InitRisk(double cRpp, double cPosRatio) {
-            rpp = cRpp;
-            posRatio = cPosRatio;
-        };
-
-        virtual OpenTradeParams CalcTradeParams(ENUM_ORDER_TYPE orderType)=0;
+        virtual double GetValue()=0;
 
 };
 
