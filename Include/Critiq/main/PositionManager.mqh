@@ -1,6 +1,5 @@
 #include <Trade/Trade.mqh>
 
-#include <Critiq/main/Risk.mqh>
 #include <Critiq/backend/RiskModel.mqh>
 #include <Critiq/main/Calculations.mqh>
 
