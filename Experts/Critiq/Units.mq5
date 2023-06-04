@@ -1,6 +1,6 @@
 #include <Critiq/backend/ModelBackendNew.mqh>
 #include <Critiq/Models/Dewa.mqh>
-#include <Critiq/Models/Risk/ATR.mqh>
+#include <Critiq/Models/Risk/Atr.mqh>
 
 input double rpp = 1.0;                                                             
 input double pos_ratio = 10.0;
@@ -14,11 +14,11 @@ input ENUM_APPLIED_PRICE dewa_price = PRICE_CLOSE;
 
 ModelBackend *modelBackend = new ModelBackend;
 Dewa *dewa = new Dewa;
-ATR *atr = new ATR;
+Atr *atr = new Atr;
 
 int OnInit() {
 
-    atr.InitDefault(rpp, pos_ratio);
+    atr.InitRisk(rpp, pos_ratio); 
     atr.InitParams(atr_period, atr_multiplier);
     dewa.Init(dewa_period, dewa_volume, dewa_price);
 

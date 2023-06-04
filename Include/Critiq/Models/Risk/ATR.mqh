@@ -1,7 +1,7 @@
 #include <Critiq/backend/RiskModel.mqh>
 #include <Critiq/main/Calculations.mqh>
 
-class ATR : public RiskModel {
+class Atr : public RiskModel {
     protected:
         int atr_handle;
 
@@ -10,30 +10,31 @@ class ATR : public RiskModel {
         double GetValue();
 
     public:
-        ATR(void);
-        ~ATR(void);
+        Atr(void);
+        ~Atr(void);
 
         void InitParams(int period, double multiplier);
         virtual OpenTradeParams CalcTradeParams(ENUM_ORDER_TYPE orderType);
+
 };
 
-extern ATR *atr = new ATR;
+extern Atr *atr = new Atr;
 
-void ATR::ATR(void) : inpPeriod(14),
+void Atr::Atr(void) : inpPeriod(14),
                      inpMultiplier(0.7) {}
 
-void ATR::~ATR(void) {
+void Atr::~Atr(void) {
     IndicatorRelease(atr_handle);
 }
 
-void ATR::InitParams(int cPeriod, double cMultiplier) {
+void Atr::InitParams(int cPeriod, double cMultiplier) {
     inpPeriod = cPeriod;
     inpMultiplier = cMultiplier;
 
     atr_handle = iATR(NULL, 0, inpPeriod);
 }
 
-double ATR::GetValue() {
+double Atr::GetValue() {
     double _atr_value[];
     ResetLastError();
     ArraySetAsSeries(_atr_value, true);
@@ -41,7 +42,7 @@ double ATR::GetValue() {
     return NormalizeDouble(_atr_value[0] * inpMultiplier, _Digits);
 }
 
-OpenTradeParams ATR::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
+OpenTradeParams Atr::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
     double atr_value = GetValue();
     double riskPerTrade = CalcRPP();
     
@@ -51,5 +52,6 @@ OpenTradeParams ATR::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
     params.slPrice = GetSLprice(atr_value, params.type);
     params.tpPrice = GetTPprice(atr_value, params.type, posRatio);
     
+    gLog.Debug(DoubleToString(params.volume));
     return params;
 }

@@ -19,12 +19,13 @@ class RiskModel {
         RiskModel(void);
         ~RiskModel(void);
 
-        void InitDefault(double cRpp, double cPosRatio) {
+        void InitRisk(double cRpp, double cPosRatio) {
             rpp = cRpp;
             posRatio = cPosRatio;
         };
 
         virtual OpenTradeParams CalcTradeParams(ENUM_ORDER_TYPE orderType)=0;
+
 };
 
 RiskModel::RiskModel(void) : rpp(1.0),
