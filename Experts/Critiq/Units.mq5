@@ -1,6 +1,6 @@
 #include <Critiq/backend/ModelBackendNew.mqh>
 #include <Critiq/Models/Dewa.mqh>
-#include <Critiq/Models/Risk/Atr.mqh>
+#include <Critiq/Models/Risk/ATR.mqh>
 
 input double rpp = 1.0;                                                             
 input double pos_ratio = 10.0;

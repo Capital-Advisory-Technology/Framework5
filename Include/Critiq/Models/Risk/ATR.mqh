@@ -52,6 +52,5 @@ OpenTradeParams Atr::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
     params.slPrice = GetSLprice(atr_value, params.type);
     params.tpPrice = GetTPprice(atr_value, params.type, posRatio);
     
-    gLog.Debug(DoubleToString(params.volume));
     return params;
 }
