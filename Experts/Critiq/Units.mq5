@@ -19,15 +19,15 @@ Dewa *dewa = new Dewa;
 Atr *atr = new Atr;
 
 int OnInit() {
-
+    // SET RISK
     atr.InitParams(atr_period, atr_multiplier);
     risk.InitRisk(atr, rpp, pos_ratio);
-
-    dewa.Init(dewa_period, dewa_volume, dewa_price);
-
-    modelBackend.setModel(dewa);
     modelBackend.setRisk(risk);
-    modelBackend.setRiskModel(atr);
+    
+    // SET SIGNAL MODEL
+    dewa.Init(dewa_period, dewa_volume, dewa_price);
+    modelBackend.setModel(dewa);
+    
 
     return(INIT_SUCCEEDED);
 }
@@ -38,4 +38,12 @@ void OnDeinit(const int reason) {
 
 void OnTick() {
     modelBackend.OnTick();
+}
+
+void OnTrade() {
+    Print("OnTrade");
+}
+
+void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result) {
+    Print("OnTradeTransaction");
 }

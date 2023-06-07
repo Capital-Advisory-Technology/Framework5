@@ -1,13 +1,11 @@
 #include <Critiq/backend/Model.mqh>
 #include<Critiq/main/Risk.mqh>
-#include <Critiq/backend/RiskModel.mqh>
 #include <Critiq/main/PositionManager.mqh>
 
 class ModelBackend {
     protected:
-        Model *model;
         Risk *risk;
-        RiskModel *riskModel;
+        Model *model;
         
     public:
 
@@ -15,18 +13,17 @@ class ModelBackend {
         ~ModelBackend(void);
 
         void OnTick();
-        void setModel(Model *cModel) { model = cModel; }
         void setRisk(Risk *cRisk) { risk = cRisk; }
-        void setRiskModel(RiskModel *cRiskModel) { riskModel = cRiskModel; }
+        void setModel(Model *cModel) { model = cModel; }
 };
 
 extern ModelBackend *modelBackend;
 
 void ModelBackend::ModelBackend(void) {}
 void ModelBackend::~ModelBackend(void) {
-    delete model;
+    risk.RiskLossReducer(0,0);
     delete risk;
-    delete riskModel;
+    delete model;
 }
 
 void ModelBackend::OnTick() {

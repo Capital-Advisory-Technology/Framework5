@@ -13,5 +13,4 @@ class RiskModel {
         ~RiskModel(void){};
 
         virtual double GetValue()=0;
-
 };
