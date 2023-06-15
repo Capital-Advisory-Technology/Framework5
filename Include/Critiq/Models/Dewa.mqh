@@ -42,8 +42,6 @@ ENUM_ORDER_TYPE Dewa::GetSignal() {
     ArraySetAsSeries(_dema_signal, true);
     CopyBuffer(dema_handle,1,0,5,_dema_signal);
 
-    Print("Current: ", _dema_signal[1], " Previous: ", _dema_signal[2]);
-
     if(_dema_signal[1] == 1.0 && _dema_signal[2] == 2.0) {
         return ORDER_TYPE_BUY;
     } else if(_dema_signal[1] == 2.0 && _dema_signal[2] == 1.0) {

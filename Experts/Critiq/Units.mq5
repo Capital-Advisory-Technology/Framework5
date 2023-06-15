@@ -1,4 +1,4 @@
-#include <Critiq/backend/ModelBackendNew.mqh>
+#include <Critiq/backend/ModelBackend.mqh>
 #include <Critiq/Models/Dewa.mqh>
 #include <Critiq/main/Risk.mqh>
 #include <Critiq/Models/Risk/ATR.mqh>
@@ -40,10 +40,18 @@ void OnTick() {
     modelBackend.OnTick();
 }
 
-void OnTrade() {
-    Print("OnTrade");
-}
+void OnTimer() {}
 
-void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result) {
-    Print("OnTradeTransaction");
-}
+void OnTrade() {}
+
+void OnTradeTransaction(const MqlTradeTransaction &trans, 
+                        const MqlTradeRequest &request, 
+                        const MqlTradeResult &result) {}
+
+double OnTester() {return(0);}
+
+int onTesterInit() {return(0);}
+
+void OnTesterDeinit() {}
+
+void OnTesterPass() {}

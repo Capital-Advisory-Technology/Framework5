@@ -4,12 +4,13 @@
 class Risk {
     protected:
         RiskModel *riskModel;
-        double rpp;
+        double inputRpp;
         double posRatio;
         
         double CalcRPP();
         double CalcSLPips();
         
+        double RRLostTrade(double cReduction, double cRpp);
         
 
     public:
@@ -18,23 +19,28 @@ class Risk {
 
         void InitRisk(RiskModel *cRiskModel, double cRpp, double cPosRatio) {
             riskModel = cRiskModel;
-            rpp = cRpp;
+            inputRpp = cRpp;
             posRatio = cPosRatio;
         };
 
         OpenTradeParams CalcTradeParams(ENUM_ORDER_TYPE orderType);
-        double RiskLossReducer(int nLosses, double reduction);
 };
 
 extern Risk *risk = new Risk;
 
-Risk::Risk(void) : rpp(1.0),
+Risk::Risk(void) : inputRpp(1.0),
                    posRatio(10) {}
 
 Risk::~Risk(void) {}
 
 double Risk::CalcRPP() {
-    return rpp;
+    // Set risk per position from the input
+    double riskPerPos = inputRpp;
+    
+    // Calculate risk per position by different reducers
+    // riskPerPos = RRLostTrade(0.01, riskPerPos);
+
+    return riskPerPos;
 }
 
 double Risk::CalcSLPips() {
@@ -57,36 +63,25 @@ OpenTradeParams Risk::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
 
 // Possibly need to move this to a class
 // To count losses as deals go bu in OnTrade 
-double Risk::RiskLossReducer(int nLosses, double reduction) {
-    if (nLosses == 0 || reduction == 0) {
-        return rpp;
+double Risk::RRLostTrade(double reduction, double cRpp) {
+    if (reduction == 0) {
+        return cRpp;
     } else {
-            HistorySelect(0, TimeCurrent());
-        // string   name;
+        HistorySelect(0, TimeCurrent());
         uint     total=HistoryDealsTotal();
         ulong    ticket=0;
-        double   price;
         double   profit;
-        datetime time;
-        string   symbol;
-        long     type;
-        long     entry;
+        double reducedRisk = cRpp;
 
         for(uint i=total; i>0; i--) {
             if((ticket=HistoryDealGetTicket(i))>0) {
-                price =HistoryDealGetDouble(ticket,DEAL_PRICE);
-                time  =(datetime)HistoryDealGetInteger(ticket,DEAL_TIME);
-                symbol=HistoryDealGetString(ticket,DEAL_SYMBOL);
-                type  =HistoryDealGetInteger(ticket,DEAL_TYPE);
-                entry =HistoryDealGetInteger(ticket,DEAL_ENTRY);
                 profit=HistoryDealGetDouble(ticket,DEAL_PROFIT);
-
-                if(price && time && symbol==Symbol()) {
-                    Print("Ticket: ", ticket, " Price: ", price, " Time: ", time, " Symbol: ", symbol, " Type: ", type, " Entry: ", entry, " Profit: ", profit);
-                }
+                if (profit < 0) reducedRisk -= reducedRisk * reduction;
+                else if(profit == .0) continue;
+                else break;
             }
         }
 
-        return rpp;
+        return NormalizeDouble(reducedRisk, 4);
     }
 }
