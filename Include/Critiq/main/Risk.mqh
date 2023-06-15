@@ -5,20 +5,22 @@ class Risk {
     protected:
         RiskModel *riskModel;
         double inputRpp;
+        double inputRppReducePerLoss;
         double posRatio;
         
         double CalcRPP();
         double CalcSLPips();
         
-        double RRLostTrade(double cReduction, double cRpp);
+        double RRPerLoss(double cReduction, double cRpp);
         
 
     public:
         Risk(void);
         ~Risk(void);
 
-        void InitRisk(RiskModel *cRiskModel, double cRpp, double cPosRatio) {
+        void InitRisk(RiskModel *cRiskModel, double cRpp, double cInputRppReducePerLoss, double cPosRatio) {
             riskModel = cRiskModel;
+            inputRppReducePerLoss = cInputRppReducePerLoss;
             inputRpp = cRpp;
             posRatio = cPosRatio;
         };
@@ -38,7 +40,7 @@ double Risk::CalcRPP() {
     double riskPerPos = inputRpp;
     
     // Calculate risk per position by different reducers
-    // riskPerPos = RRLostTrade(0.01, riskPerPos);
+    riskPerPos = RRPerLoss(inputRppReducePerLoss, riskPerPos);
 
     return riskPerPos;
 }
@@ -63,7 +65,7 @@ OpenTradeParams Risk::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
 
 // Possibly need to move this to a class
 // To count losses as deals go bu in OnTrade 
-double Risk::RRLostTrade(double reduction, double cRpp) {
+double Risk::RRPerLoss(double reduction, double cRpp) {
     if (reduction == 0) {
         return cRpp;
     } else {

@@ -3,7 +3,8 @@
 #include <Critiq/main/Risk.mqh>
 #include <Critiq/Models/Risk/ATR.mqh>
 
-input double rpp = 1.0;                                                             
+input double rpp = 1.0;
+input double rpp_reduce_per_loss = 0.01;
 input double pos_ratio = 10.0;
 
 input int atr_period = 14;                                              
@@ -21,7 +22,7 @@ Atr *atr = new Atr;
 int OnInit() {
     // SET RISK
     atr.InitParams(atr_period, atr_multiplier);
-    risk.InitRisk(atr, rpp, pos_ratio);
+    risk.InitRisk(atr, rpp, rpp_reduce_per_loss, pos_ratio);
     modelBackend.setRisk(risk);
     
     // SET SIGNAL MODEL
