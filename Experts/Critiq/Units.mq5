@@ -2,6 +2,7 @@
 #include <Critiq/Models/Dewa.mqh>
 #include <Critiq/main/Risk.mqh>
 #include <Critiq/Models/Risk/ATR.mqh>
+#include <Critiq/main/Limits.mqh>
 
 input double rpp = 1.0;
 input double rpp_reduce_per_loss = 0.01;
@@ -15,6 +16,7 @@ input double dewa_volume = 0.7;
 input ENUM_APPLIED_PRICE dewa_price = PRICE_CLOSE;
 
 ModelBackend *modelBackend = new ModelBackend;
+Limits *limits = new Limits;
 Risk *risk = new Risk;
 Dewa *dewa = new Dewa;
 Atr *atr = new Atr;
@@ -28,8 +30,11 @@ int OnInit() {
     // SET SIGNAL MODEL
     dewa.Init(dewa_period, dewa_volume, dewa_price);
     modelBackend.setModel(dewa);
-    
 
+    // SET LIMITS
+    limits.setIntraDay(7, 22);
+    modelBackend.setLimits(limits);
+    
     return(INIT_SUCCEEDED);
 }
 

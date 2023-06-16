@@ -1,60 +1,33 @@
-#include <Critiq/common/Logger.mqh>
-
-
 class Limits {
     protected:
-        bool lossLimit;
-        bool countLimit;
-        bool sessionLimit;
-        bool dayOfWeekLimit;
-
-        double lossPercent;
-        int lossHours;
-
-        int countAmount;
-        string session;
-        int dayOfWeek;  // this possibly should be a vector of bool
-
-        
-
+        int timeFrom;
+        int timeTo;
+    
     public:
         Limits(void);
         ~Limits(void);
 
-        void InitDailyLoss(double cLossPercent);
-        void InitWeeklyLoss(double cLossPercent);
-        
-        void InitSession() {};
-
-        // void InitLossLimit(double cLossPercent, int hours);
-
-        // bool LossLimit();
-        // bool CountLimit();
-        // bool SessionLimit();
-        // bool DayOfWeekLimit();
-
-        bool getLimits();
-
+        void setIntraDay(int cTimeFrom, int cTimeTo) {
+            timeFrom = cTimeFrom;
+            timeTo = cTimeTo;
+        };
+        bool intraDayAllowed();
 };
 
-Limits::Limits(void) :  lossLimit(false),
-                        countLimit(false),
-                        sessionLimit(false),
-                        dayOfWeekLimit(false),
-                        lossPercent(0),
-                        countAmount(0),
-                        session(""),
-                        dayOfWeek(0)
-{
-}
+extern Limits *limits = new Limits;
 
-Limits::~Limits(void)
-{
-}
+Limits::Limits(void) : timeFrom(0),
+                       timeTo(0) {}
 
+Limits::~Limits(void) {}
 
-
-bool Limits::getLimits() {
+bool Limits::intraDayAllowed() {
+    MqlDateTime dtNow;
+    TimeCurrent(dtNow);
+    int currentHour = dtNow.hour;
+    Print("Current hour: ", currentHour, " Time from: ", timeFrom, " Time to: ", timeTo);
+    if (timeFrom == 0 && timeTo == 0) return true;
+    if (timeFrom <= currentHour && currentHour <= timeTo) return true;
     
     return false;
 }
