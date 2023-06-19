@@ -19,6 +19,7 @@ class PositionManager {
         void OrderPartialClose(double volume);   
 
         bool isOrderOpen() { return PositionsTotal() != 0;};
+        void checkBreakEven();
 };
 
 extern PositionManager *positionManager = new PositionManager;
@@ -80,4 +81,8 @@ void PositionManager::OrderClose() {
 void PositionManager::OrderPartialClose(double cVolume) {
     ulong oticket = PositionGetTicket(0);  
     trade.PositionClose(oticket, 0);     
+}
+
+void PositionManager::checkBreakEven() {
+    
 }

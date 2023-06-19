@@ -30,10 +30,10 @@ void ModelBackend::~ModelBackend(void) {
 }
 
 void ModelBackend::OnTick() {
-    if (limits.intraDayAllowed()) {
-        Print("ModelBackend | OnTick | Intraday allowed ");
-        if (!positionManager.isOrderOpen()) {
-            Print("ModelBackend | OnTick | No order open ");
+    // Open position if intraday allowed and no order open
+    if (!positionManager.isOrderOpen()) {
+        if (limits.intraDayAllowed()) {
+            Print("ModelBackend | OnTick | No order open and intraday allowed ");
             ENUM_ORDER_TYPE signal = model.GetSignal();
             Print("ModelBackend | OnTick | Signal: ", signal);
             if (signal == ORDER_TYPE_BUY || signal == ORDER_TYPE_SELL) {    
@@ -41,5 +41,13 @@ void ModelBackend::OnTick() {
                 positionManager.OrderOpen(tradeParams);
             }
         }
+
+    // Position management     
+    } else {
+        Print("ModelBackend | OnTick | Order open ");
+        // check for break even, moving stop loss
+        positionManager.checkBreakEven();
+        // check for profit zones, partial close
     }
+
 }

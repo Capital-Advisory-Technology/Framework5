@@ -32,7 +32,7 @@ int OnInit() {
     modelBackend.setModel(dewa);
 
     // SET LIMITS
-    limits.setIntraDay(7, 22);
+    limits.setIntraDay(2, 22);
     modelBackend.setLimits(limits);
     
     return(INIT_SUCCEEDED);

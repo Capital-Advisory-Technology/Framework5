@@ -25,9 +25,16 @@ bool Limits::intraDayAllowed() {
     MqlDateTime dtNow;
     TimeCurrent(dtNow);
     int currentHour = dtNow.hour;
-    Print("Current hour: ", currentHour, " Time from: ", timeFrom, " Time to: ", timeTo);
-    if (timeFrom == 0 && timeTo == 0) return true;
-    if (timeFrom <= currentHour && currentHour <= timeTo) return true;
+
+    if (timeFrom == 0 && timeTo == 0) {
+        Print("Limits | intraDayAllowed | No limits set");
+        return true;
+    }
+    if (timeFrom <= currentHour && currentHour <= timeTo) {
+        Print("Limits | intraDayAllowed | Intraday allowed");
+        Print("Limits | intraDayAllowed | Time from: ", timeFrom, " Time to: ", timeTo, " Current hour: ", currentHour);
+        return true;
+    }
     
     return false;
 }
