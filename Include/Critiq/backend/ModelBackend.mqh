@@ -3,6 +3,8 @@
 #include<Critiq/main/Limits.mqh>
 #include <Critiq/main/PositionManager.mqh>
 
+#include <Critiq/main/RiskFunctions.mqh>
+
 class ModelBackend {
     protected:
         Risk *risk;
@@ -33,20 +35,25 @@ void ModelBackend::OnTick() {
     // Open position if intraday allowed and no order open
     if (!positionManager.isOrderOpen()) {
         if (limits.intraDayAllowed()) {
-            Print("ModelBackend | OnTick | No order open and intraday allowed ");
+            // Print("ModelBackend | OnTick | No order open and intraday allowed ");
             ENUM_ORDER_TYPE signal = model.GetSignal();
-            Print("ModelBackend | OnTick | Signal: ", signal);
+            // Print("ModelBackend | OnTick | Signal: ", signal);
             if (signal == ORDER_TYPE_BUY || signal == ORDER_TYPE_SELL) {    
-                OpenTradeParams tradeParams = risk.CalcTradeParams(signal);
+                PositionParams tradeParams = risk.CalcTradeParams(signal);
                 positionManager.OrderOpen(tradeParams);
             }
         }
 
     // Position management     
     } else {
-        Print("ModelBackend | OnTick | Order open ");
+        // Print("ModelBackend | OnTick | Order open ");
         // check for break even, moving stop loss
-        positionManager.checkBreakEven();
+        bool breakEven = CheckForBreakEven(0.5);
+        if(breakEven) {
+            Print("ModelBackend | OnTick | CheckForBreakEven | Break even triggered");
+        }
+        // risk.checkBreakEven();
+        // positionManager.checkBreakEven();
         // check for profit zones, partial close
     }
 

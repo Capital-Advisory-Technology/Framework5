@@ -1,11 +1,3 @@
-struct OpenTradeParams {
-    ENUM_ORDER_TYPE type;
-    double volume;
-    double openPrice;
-    double slPrice;
-    double tpPrice;
-};
-
 class RiskModel {
 
     public:

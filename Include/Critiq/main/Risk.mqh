@@ -1,12 +1,28 @@
 #include <Critiq\backend\RiskModel.mqh>
 #include <Critiq\main\Calculations.mqh>
 
+
+struct PositionParams {
+    ENUM_ORDER_TYPE type;
+    double volume;
+    double openPrice;
+    double slPrice;
+    double tpPrice;
+    double bePrice;
+    double pf1Price;
+    double pf2Price;
+};
+
 class Risk {
     protected:
         RiskModel *riskModel;
+
+        PositionParams openPositionParams;
+        
         double inputRpp;
         double inputRppReducePerLoss;
-        double posRatio;
+        double inputPosRatio;
+        double inputBreakEven;
         
         double CalcRPP();
         double CalcSLPips();
@@ -18,20 +34,28 @@ class Risk {
         Risk(void);
         ~Risk(void);
 
-        void InitRisk(RiskModel *cRiskModel, double cRpp, double cInputRppReducePerLoss, double cPosRatio) {
+        void InitRisk(
+            RiskModel *cRiskModel,
+            double cRpp,
+            double cInputRppReducePerLoss,
+            double cInputPosRatio,
+            double cInputBreakEven
+        ) {
             riskModel = cRiskModel;
             inputRppReducePerLoss = cInputRppReducePerLoss;
             inputRpp = cRpp;
-            posRatio = cPosRatio;
+            inputPosRatio = cInputPosRatio;
+            inputBreakEven = cInputBreakEven;
         };
 
-        OpenTradeParams CalcTradeParams(ENUM_ORDER_TYPE orderType);
+        PositionParams CalcTradeParams(ENUM_ORDER_TYPE orderType);
+        
 };
 
 extern Risk *risk = new Risk;
 
 Risk::Risk(void) : inputRpp(1.0),
-                   posRatio(10) {}
+                   inputPosRatio(10) {}
 
 Risk::~Risk(void) {}
 
@@ -50,16 +74,17 @@ double Risk::CalcSLPips() {
     return points;
 }
 
-OpenTradeParams Risk::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
+PositionParams Risk::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
     double riskPerPosition = CalcRPP();
     double slPips = CalcSLPips();
     
-    OpenTradeParams params;
+    PositionParams params;
     params.type = orderType;
+    params.openPrice = GetOpenPrice(orderType);
     params.slPrice = GetSLprice(slPips, params.type);
-    params.tpPrice = GetTPprice(slPips, params.type, posRatio);
+    params.tpPrice = GetTPprice(slPips, params.type, inputPosRatio);
     params.volume = CalculateLotSize(riskPerPosition, slPips);
-    
+
     return params;
 }
 

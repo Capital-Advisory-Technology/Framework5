@@ -27,12 +27,9 @@ bool Limits::intraDayAllowed() {
     int currentHour = dtNow.hour;
 
     if (timeFrom == 0 && timeTo == 0) {
-        Print("Limits | intraDayAllowed | No limits set");
         return true;
     }
     if (timeFrom <= currentHour && currentHour <= timeTo) {
-        Print("Limits | intraDayAllowed | Intraday allowed");
-        Print("Limits | intraDayAllowed | Time from: ", timeFrom, " Time to: ", timeTo, " Current hour: ", currentHour);
         return true;
     }
     

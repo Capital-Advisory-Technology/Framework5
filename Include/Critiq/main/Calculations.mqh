@@ -1,5 +1,4 @@
 // Calculates LotSize based on balance, risk and StopLoss
-#include <Critiq/backend/RiskModel.mqh>
 
 double CalculateLotSize(double calc_risk, double slPips) {
    double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
@@ -35,6 +34,20 @@ double GetTPprice(double priceDelta, int orderType, double ratio) {
          break;
       case ORDER_TYPE_SELL:
          price = NormalizeDouble(SymbolInfoDouble(_Symbol, SYMBOL_BID) - priceDelta, _Digits);
+         break;
+   }
+   return price;
+}
+
+double GetOpenPrice(int orderType) {
+   double price = .0;
+
+   switch(orderType) {
+      case ORDER_TYPE_BUY:
+         price = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+         break;
+      case ORDER_TYPE_SELL:
+         price = SymbolInfoDouble(_Symbol, SYMBOL_BID);
          break;
    }
    return price;
