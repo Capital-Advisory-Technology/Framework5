@@ -8,6 +8,9 @@ input double rpp = 1.0;
 input double rpp_reduce_per_loss = 0.01;
 input double pos_ratio = 10.0;
 
+input int limits_intraday_from = 2;
+input int limits_intraday_to = 22;
+
 input int atr_period = 14;                                              
 input double atr_multiplier = 1.5;
 
@@ -32,7 +35,7 @@ int OnInit() {
     modelBackend.setModel(dewa);
 
     // SET LIMITS
-    limits.setIntraDay(2, 22);
+    limits.setIntraDay(limits_intraday_from, limits_intraday_to);
     modelBackend.setLimits(limits);
     
     return(INIT_SUCCEEDED);
