@@ -29,7 +29,7 @@ input double atr_multiplier = 1.5;
 // Strategy - Signal parameters
 input ENUM_PRICE_DERIVATIVE wadPrice = Close; 
 input int wadSensitivity = 150;
-input int wadFLength = 20; // This
+input int wadFLength = 20; 
 input int wadSLength = 40;
 input int wadBLength = 20;
 input double wadBDev = 2.0;
@@ -56,7 +56,7 @@ int OnInit() {
     modelBackend.setProfitSystem(ps_t1, ps_t2, ps_s1, ps_s2, ps_be);
     modelBackend.setRisk(risk);
     
-    // SET SIGNAL MODEL
+    // SET MODEL
         dewa.Init(dewa_period, dewa_volume, dewa_price, wadPrice, wadSensitivity, 
               wadFLength, wadSLength, wadBLength, wadBDev, wadSmooth);     
                            
@@ -78,7 +78,6 @@ void OnTick() {
 }
 
 void OnTrade() {
-    // modelBackend.OnTrade();
 }
 
 void OnTradeTransaction(const MqlTradeTransaction &trans, 
