@@ -1,28 +1,17 @@
-#include <Critiq\backend\RiskModel.mqh>
-#include <Critiq\main\Calculations.mqh>
+#include <Critiq/backend/RiskModel.mqh>
+#include <Critiq/main/Calculations.mqh>
+#include <Critiq/main/ProfitSystem.mqh>
+#include <Critiq/common/Structures.mqh>
 
-
-struct PositionParams {
-    ENUM_ORDER_TYPE type;
-    double volume;
-    double openPrice;
-    double slPrice;
-    double tpPrice;
-    double bePrice;
-    double pf1Price;
-    double pf2Price;
-};
 
 class Risk {
     protected:
         RiskModel *riskModel;
-
         PositionParams openPositionParams;
         
         double inputRpp;
         double inputRppReducePerLoss;
         double inputPosRatio;
-        double inputBreakEven;
         
         double CalcRPP();
         double CalcSLPips();
@@ -38,14 +27,11 @@ class Risk {
             RiskModel *cRiskModel,
             double cRpp,
             double cInputRppReducePerLoss,
-            double cInputPosRatio,
-            double cInputBreakEven
+            double cInputPosRatio
         ) {
             riskModel = cRiskModel;
             inputRppReducePerLoss = cInputRppReducePerLoss;
             inputRpp = cRpp;
-            inputPosRatio = cInputPosRatio;
-            inputBreakEven = cInputBreakEven;
         };
 
         PositionParams CalcTradeParams(ENUM_ORDER_TYPE orderType);

@@ -2,7 +2,7 @@
 
 #include <Critiq/main/Risk.mqh>
 #include <Critiq/main/Calculations.mqh>
-
+#include <Critiq/common/Structures.mqh>
 
 class PositionManager {
     protected:  
@@ -35,7 +35,7 @@ void PositionManager::OrderOpen(PositionParams &params) {
 
 void PositionManager::OrderModify(double sl, double tp) {
     ulong oticket = PositionGetTicket(0);  
-    trade.PositionModify(Symbol(), sl, tp);
+    trade.PositionModify(_Symbol, sl, tp);
 }
 
 void PositionManager::OrderClose() {    
@@ -45,5 +45,5 @@ void PositionManager::OrderClose() {
 
 void PositionManager::OrderPartialClose(double cVolume) {
     ulong oticket = PositionGetTicket(0);  
-    trade.PositionClose(oticket, 0);     
+    trade.PositionClosePartial(_Symbol, cVolume);     
 }
