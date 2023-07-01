@@ -1,4 +1,4 @@
-// Calculates LotSize based on balance, risk and StopLoss
+// TODO: change input parameters to struct
 
 double CalculateLotSize(double calc_risk, double slPips) {
    double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
