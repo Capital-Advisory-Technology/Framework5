@@ -7,15 +7,13 @@ class Atr : public RiskModel {
 
         int inpPeriod;
         double inpMultiplier;
-        double GetValue();
 
     public:
         Atr(void);
         ~Atr(void);
 
         void InitParams(int period, double multiplier);
-        virtual OpenTradeParams CalcTradeParams(ENUM_ORDER_TYPE orderType);
-
+        virtual double GetValue();
 };
 
 extern Atr *atr = new Atr;
@@ -40,17 +38,4 @@ double Atr::GetValue() {
     ArraySetAsSeries(_atr_value, true);
     CopyBuffer(atr_handle,0,1,1,_atr_value);
     return NormalizeDouble(_atr_value[0] * inpMultiplier, _Digits);
-}
-
-OpenTradeParams Atr::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
-    double atr_value = GetValue();
-    double riskPerTrade = CalcRPP();
-    
-    OpenTradeParams params;
-    params.type = orderType;
-    params.volume = CalculateLotSize(rpp, atr_value);
-    params.slPrice = GetSLprice(atr_value, params.type);
-    params.tpPrice = GetTPprice(atr_value, params.type, posRatio);
-    
-    return params;
 }

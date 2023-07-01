@@ -11,47 +11,54 @@ bool ModifyOrderSL(ulong oticket, double breakeven_price) {
 
    request.action = TRADE_ACTION_SLTP;
    request.position = oticket;
-   request.symbol = Symbol(); // Might be useless
+   request.symbol = _Symbol; // Might be useless
    request.sl = breakeven_price;
 
    if(!OrderSend(request, result)) {
-      gLog.Fatal("-Breakeven modify failed-");
+      // gLog.Fatal("-Breakeven modify failed-");
+      Print("ModifyOrderSL | OrderSend failed: ", GetLastError());
       return false;
    }
    return true;
 }
 
 bool CheckForBreakEven(double breakeven) {
-   double Ask = SymbolInfoDouble(Symbol(), SYMBOL_ASK);
-   double Bid = SymbolInfoDouble(Symbol(), SYMBOL_BID);
+   double Ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   double Bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
 
-   if (OrderSelect(0) == true) {
-      ulong oticket = OrderGetTicket(0);
-      double oop = OrderGetDouble(ORDER_PRICE_OPEN);
-      double osl = OrderGetDouble(ORDER_SL);
-      double otp = OrderGetDouble(ORDER_TP);
+   if (PositionSelect((_Symbol))) {
+      ulong oticket = PositionGetTicket(0);
+      double oop = PositionGetDouble(POSITION_PRICE_OPEN);
+      double osl = PositionGetDouble(POSITION_SL);
+      double otp = PositionGetDouble(POSITION_TP);
+      ulong otype = PositionGetInteger(POSITION_TYPE);
+
       //--- Skip if the Open Order has stopLossPrice = openPrice or stopLoss in range openPrice +- 10 points
       if (oop == osl || (oop + (10 * Point()) > osl && oop - (10 * Point()) < osl)) {
          return false;
       } else {
-         double high = iHigh(OrderGetString(ORDER_SYMBOL), PERIOD_CURRENT,1);   
-         double low = iLow(OrderGetString(ORDER_SYMBOL), PERIOD_CURRENT,1);
+         double high = iHigh(_Symbol, PERIOD_CURRENT,1);   
+         double low = iLow(_Symbol, PERIOD_CURRENT,1);
          double breakEvenPrice;
          bool orderModify;
          
-         if (ENUM_ORDER_TYPE(OrderGetInteger(ORDER_TYPE)) == ORDER_TYPE_BUY) {
+         if (otype == POSITION_TYPE_BUY) {
             breakEvenPrice = NormalizeDouble(((otp - oop) * breakeven + oop), Digits());
-            if (SymbolInfoDouble(Symbol(), SYMBOL_BID) >= breakEvenPrice || high >= breakEvenPrice) {
+            if (Bid >= breakEvenPrice || high >= breakEvenPrice) {
                orderModify = ModifyOrderSL(oticket, oop);
+               Print("CheckForBreakEven | OrderModify: ", " Open: ", oop, " SL: ", osl, " TP: ", otp, " BE: ", breakEvenPrice, " Bid: ", Bid, " High: ", high);
                return true;
-            } else return false;
+            }
          } else {
             breakEvenPrice = NormalizeDouble((oop - (oop - otp) * breakeven), Digits());
-            if (SymbolInfoDouble(Symbol(), SYMBOL_ASK) <= breakEvenPrice || low <= breakEvenPrice) {
+            if (Ask <= breakEvenPrice || low <= breakEvenPrice) {
                orderModify = ModifyOrderSL(oticket, oop);
+               Print("CheckForBreakEven | OrderModify: ", " Open: ", oop, " SL: ", osl, " TP: ", otp, " BE: ", breakEvenPrice, " Ask: ", Ask, " Low: ", low);
+               
                return true;
-            } else return false;
+            }
          }      
       }
-   } else return false;
+   } else  Print("CheckForBreakEven | OrderSelect(0) == false", GetLastError());
+   return false;
 }

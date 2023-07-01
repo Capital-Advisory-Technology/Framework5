@@ -1,92 +1,114 @@
-#include <Critiq/common/Logger.mqh>
-#include <Critiq/main/Calculations.mqh>
+#include <Critiq\backend\RiskModel.mqh>
+#include <Critiq\main\Calculations.mqh>
 
-#include <Critiq/Models/AdaptiveATR.mqh>
-#include <Critiq/Models/ATR.mqh>
+
+struct PositionParams {
+    ENUM_ORDER_TYPE type;
+    double volume;
+    double openPrice;
+    double slPrice;
+    double tpPrice;
+    double bePrice;
+    double pf1Price;
+    double pf2Price;
+};
 
 class Risk {
     protected:
-        // Inputs
-        double riskPerTrade;
-        double posRatio;
+        RiskModel *riskModel;
+
+        PositionParams openPositionParams;
         
-        // Risk Models
-        bool sl_atr_model;              // ATR model on/off
-        int atr_period;
-        double atr_multiplier;
-
-        bool sl_fixed_points_model;     // Fixed points model on/off
-        int fixed_points;
-
-        bool sl_scaling_model;       // Break even model on/off
-        double scaling_ratio;
-
-        // Return values
-        double volume;
-        double slPrice;
-        double tpPrice;
+        double inputRpp;
+        double inputRppReducePerLoss;
+        double inputPosRatio;
+        double inputBreakEven;
+        
+        double CalcRPP();
+        double CalcSLPips();
+        
+        double RRPerLoss(double cReduction, double cRpp);
+        
 
     public:
         Risk(void);
         ~Risk(void);
 
-        void initRisk(double riskPerTrade, double posRatio);
+        void InitRisk(
+            RiskModel *cRiskModel,
+            double cRpp,
+            double cInputRppReducePerLoss,
+            double cInputPosRatio,
+            double cInputBreakEven
+        ) {
+            riskModel = cRiskModel;
+            inputRppReducePerLoss = cInputRppReducePerLoss;
+            inputRpp = cRpp;
+            inputPosRatio = cInputPosRatio;
+            inputBreakEven = cInputBreakEven;
+        };
 
-        void init_sl_atr(int period, double multiplier);
-        void get_sl_atr(ENUM_ORDER_TYPE orderType);
-
-        void init_atr_model(int period, double multiplier);
-        void get_atr_model(ENUM_ORDER_TYPE orderType);
-
-        double get_volume() { return volume; }
-        double get_slPrice() { return slPrice; }
-        double get_tpPrice() { return tpPrice; }
+        PositionParams CalcTradeParams(ENUM_ORDER_TYPE orderType);
+        
 };
 
 extern Risk *risk = new Risk;
-aATR *adaptiveATR = new aATR;
-ATR *slATR = new ATR;
 
-Risk::Risk(void) : riskPerTrade(1.0), posRatio(10),
-                   sl_atr_model(true), atr_period(14),
-                   atr_multiplier(1.5), sl_fixed_points_model(false),
-                   fixed_points(NULL), sl_scaling_model(false),
-                   scaling_ratio(NULL) {}
+Risk::Risk(void) : inputRpp(1.0),
+                   inputPosRatio(10) {}
 
-void Risk::~Risk(void) {} 
+Risk::~Risk(void) {}
 
-void Risk::initRisk(double cRiskPerTrade, double cPosRatio) {
-    riskPerTrade = cRiskPerTrade;
-    posRatio = cPosRatio;
-}
-
-void Risk::init_sl_atr(int period, double multiplier) {
-    sl_atr_model = true;
-    atr_period = period;
-    atr_multiplier = multiplier;
-
-    slATR.init(period);
-}
-
-void Risk::get_sl_atr(ENUM_ORDER_TYPE orderType) {
-    double atr_val = NormalizeDouble(slATR.GetLast(), _Digits);
+double Risk::CalcRPP() {
+    // Set risk per position from the input
+    double riskPerPos = inputRpp;
     
-    volume = NormalizeDouble(CalculateLotSize(riskPerTrade, atr_val), 2);
-    slPrice = NormalizeDouble(GetSLprice(atr_val, orderType), _Digits+1);
-    tpPrice = NormalizeDouble(GetTPprice(atr_val, orderType, posRatio), _Digits+1);
+    // Calculate risk per position by different reducers
+    riskPerPos = RRPerLoss(inputRppReducePerLoss, riskPerPos);
+
+    return riskPerPos;
 }
 
-void Risk::init_atr_model(int period, double multiplier) {
-    adaptiveATR.Init(period);
-    this.sl_atr_model = true;
-    this.atr_period = period;
-    this.atr_multiplier = multiplier;
+double Risk::CalcSLPips() {
+    double points = riskModel.GetValue();
+    return points;
 }
 
-void Risk::get_atr_model(ENUM_ORDER_TYPE orderType) {
-    double atr_val = NormalizeDouble(adaptiveATR.GetValue() * atr_multiplier, _Digits);    
-    volume = NormalizeDouble(CalculateLotSize(riskPerTrade, atr_val), 2);
-    slPrice = NormalizeDouble(GetSLprice(atr_val, orderType), _Digits);
-    tpPrice = NormalizeDouble(GetTPprice(atr_val, orderType, posRatio), _Digits);
+PositionParams Risk::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
+    double riskPerPosition = CalcRPP();
+    double slPips = CalcSLPips();
+    
+    PositionParams params;
+    params.type = orderType;
+    params.openPrice = GetOpenPrice(orderType);
+    params.slPrice = GetSLprice(slPips, params.type);
+    params.tpPrice = GetTPprice(slPips, params.type, inputPosRatio);
+    params.volume = CalculateLotSize(riskPerPosition, slPips);
+
+    return params;
 }
 
+// Possibly need to move this to a class
+// To count losses as deals go bu in OnTrade 
+double Risk::RRPerLoss(double reduction, double cRpp) {
+    if (reduction == 0) {
+        return cRpp;
+    } else {
+        HistorySelect(0, TimeCurrent());
+        uint     total=HistoryDealsTotal();
+        ulong    ticket=0;
+        double   profit;
+        double reducedRisk = cRpp;
+
+        for(uint i=total; i>0; i--) {
+            if((ticket=HistoryDealGetTicket(i))>0) {
+                profit=HistoryDealGetDouble(ticket,DEAL_PROFIT);
+                if (profit < 0) reducedRisk -= reducedRisk * reduction;
+                else if(profit == .0) continue;
+                else break;
+            }
+        }
+
+        return NormalizeDouble(reducedRisk, 4);
+    }
+}
