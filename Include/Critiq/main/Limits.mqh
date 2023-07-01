@@ -35,3 +35,5 @@ bool Limits::intraDayAllowed() {
     
     return false;
 }
+
+// TODO: add different symbol volatility limits

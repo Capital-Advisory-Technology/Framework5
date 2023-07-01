@@ -45,11 +45,11 @@ ENUM_ORDER_TYPE Dewa::GetSignal() {
     CopyBuffer(demaHandle,1,0,5,_dema_signal);
     CopyBuffer(waddahHandle, 1, 0, 5, _waddah_colour);
 
-    if(_dema_signal[0] == 1.0 && _dema_signal[1] == 2.0) {
-        if (_waddah_colour[0] == 0.0 || _waddah_colour[1] == 1.0)
+    if(_dema_signal[1] == 1.0 && _dema_signal[2] == 2.0) {
+        if (_waddah_colour[1] == 0.0 || _waddah_colour[2] == 1.0)
             return ORDER_TYPE_BUY;
-    } else if(_dema_signal[0] == 2.0 && _dema_signal[1] == 1.0) {
-        if (_waddah_colour[0] == 2.0 || _waddah_colour[1] == 3.0)
+    } else if(_dema_signal[1] == 2.0 && _dema_signal[2] == 1.0) {
+        if (_waddah_colour[1] == 2.0 || _waddah_colour[2] == 3.0)
         return ORDER_TYPE_SELL;
     } 
     
