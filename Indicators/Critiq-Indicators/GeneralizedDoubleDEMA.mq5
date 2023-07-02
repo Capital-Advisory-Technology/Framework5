@@ -1,10 +1,3 @@
-
-//------------------------------------------------------------------
-#property copyright   "© mladen, 2018"
-#property link        "mladenfx@gmail.com"
-#property version     "1.00"
-#property description "Generalized double DEMA"
-//------------------------------------------------------------------
 #property indicator_chart_window
 #property indicator_buffers 2
 #property indicator_plots   1
@@ -13,44 +6,19 @@
 #property indicator_color1  clrSilver,clrMediumSeaGreen,clrDarkOrange
 #property indicator_width1  2
 
-//
-//---
-//
-
 input int                inpPeriod = 14;          // Double DEMA period
 input double             inpVolume = 0.7;         // Double DEMA volume factor
 input ENUM_APPLIED_PRICE inpPrice  = PRICE_CLOSE; // Price
 
-//
-//---
-//
-
 double val[],valc[];
 
-//------------------------------------------------------------------
-//  Custom indicator initialization function
-//------------------------------------------------------------------
 
-void OnInit()
-{
-   //
-   //---- indicator buffers mapping
-   //
-         SetIndexBuffer(0,val,INDICATOR_DATA);
-         SetIndexBuffer(1,valc,INDICATOR_COLOR_INDEX);
-   //            
-   //----
-   //
-  
+void OnInit() {
+   SetIndexBuffer(0,val,INDICATOR_DATA);
+   SetIndexBuffer(1,valc,INDICATOR_COLOR_INDEX);
+     
    IndicatorSetString(INDICATOR_SHORTNAME,"Generalized double DEMA ("+(string)inpPeriod+")");
 }
-
-//------------------------------------------------------------------
-//  Custom indicator iteration function
-//------------------------------------------------------------------
-//
-//---
-//
 
 #define _setPrice(_priceType,_where,_index) { \
    switch(_priceType) \
@@ -65,11 +33,6 @@ void OnInit()
       default : _where = 0; \
    }}
 
-//
-//---
-//
-
-
 int OnCalculate(const int rates_total,
                 const int prev_calculated,
                 const datetime &time[],
@@ -80,6 +43,7 @@ int OnCalculate(const int rates_total,
                 const long &tick_volume[],
                 const long &volume[],
                 const int &spread[])
+
 {
    int i=(prev_calculated>0?prev_calculated-1:0); for (; i<rates_total && !_StopFlag; i++)
    {
@@ -90,19 +54,8 @@ int OnCalculate(const int rates_total,
    return(i);
 }
 
-//------------------------------------------------------------------
-//  Custom functions
-//------------------------------------------------------------------
-//
-//---
-//
-
 double iGdema(double price, double period, double volumeFactor, int i, int _instance=0)
 {
-   //
-   //---
-   //
-  
       #define _functionInstancesArraySize 5
       #define _functionInstancesCoeffSize 4
       #define _functionArrayRingSize 16
@@ -113,10 +66,7 @@ double iGdema(double price, double period, double volumeFactor, int i, int _inst
             static double _workCoeff[1                     ][_functionInstancesCoeffSize];
       #endif
             
-      //
-      //---
-      //            
-      
+
       #define _originalPeriod _workCoeff[_instance][0]
       #define _alpha          _workCoeff[_instance][1]
       #define _volume         _workCoeff[_instance][2]
@@ -135,19 +85,11 @@ double iGdema(double price, double period, double volumeFactor, int i, int _inst
       #else #define _winst _instance
       #endif
   
-   //
-   //--
-   //
-  
       int _indC = (i)%_functionArrayRingSize;
       if(i>0 && period>1.0)
       {
          int _indP = (i-1)%_functionArrayRingSize;
             #define _gdema(_ind1,_ind2) (_workArray[_indC][_winst+_ind1]*_volumepl-_workArray[_indC][_winst+_ind2]*_volume)
-        
-            //
-            //---
-            //
         
             _workArray[_indC][_winst+1] = _workArray[_indP][_winst+1]+_alpha*(price                      -_workArray[_indP][_winst+1]);
             _workArray[_indC][_winst+2] = _workArray[_indP][_winst+2]+_alpha*(_workArray[_indC][_winst+1]-_workArray[_indP][_winst+2]);
@@ -157,10 +99,6 @@ double iGdema(double price, double period, double volumeFactor, int i, int _inst
       }
       else for(int k=0; k<_functionInstancesArraySize; k++) _workArray[_indC][_winst+k] = price;
    return(_workArray[_indC][_winst]);
-  
-   //
-   //---
-   //
 
    #undef _originalPeriod #undef _volume #undef _volumepl #undef _alpha
    #undef _functionInstances #undef _functionArrayRingSize #undef _functionInstancesArraySize #undef _winst
