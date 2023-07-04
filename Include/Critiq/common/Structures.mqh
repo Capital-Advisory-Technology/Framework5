@@ -10,3 +10,8 @@ struct PositionParams {
     double s1Price;
     double s2Price;
 };
+
+struct PositionModifyParams {
+    double slPrice;
+    double tpPrice;
+};
