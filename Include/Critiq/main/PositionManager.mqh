@@ -1,7 +1,7 @@
 #include <Trade/Trade.mqh>
 
 #include <Critiq/main/Risk.mqh>
-#include <Critiq/main/Calculations.mqh>
+#include <Critiq/main/OrderFailSafe.mqh>
 #include <Critiq/common/Structures.mqh>
 
 class PositionManager {
@@ -30,20 +30,24 @@ void PositionManager::~PositionManager(void) {
 }
 
 void PositionManager::OrderOpen(PositionParams &params) {
-    trade.PositionOpen(_Symbol, params.type, params.volume, params.openPrice, params.slPrice, params.tpPrice, "");
+    if (!trade.PositionOpen(_Symbol, params.type, params.volume, params.openPrice, params.slPrice, params.tpPrice, "")) {
+        orderFailSafe.setFailedOpenType(params.type);
+    }
 }
 
 void PositionManager::OrderModify(double sl, double tp) {
-    ulong oticket = PositionGetTicket(0);  
-    trade.PositionModify(_Symbol, sl, tp);
-}
-
-void PositionManager::OrderClose() {    
-    ulong oticket = PositionGetTicket(0);  
-    trade.PositionClose(oticket, ULONG_MAX);     
+    if (!trade.PositionModify(_Symbol, sl, tp)) {
+        orderFailSafe.setFailedModifySLTP(sl, tp);
+    }
 }
 
 void PositionManager::OrderPartialClose(double cVolume) {
-    ulong oticket = PositionGetTicket(0);  
-    trade.PositionClosePartial(_Symbol, cVolume);     
+    if (!trade.PositionClosePartial(_Symbol, cVolume) && cVolume > 0.0) {
+        orderFailSafe.setFailedPartialCloseVolume(cVolume);
+    }
+}
+
+void PositionManager::OrderClose() {
+    ulong oTicket = PositionGetTicket(0);
+    trade.PositionClose(oTicket, ULONG_MAX);
 }

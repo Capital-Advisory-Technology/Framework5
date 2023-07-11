@@ -3,6 +3,7 @@
 #include<Critiq/main/Limits.mqh>
 #include <Critiq/main/ProfitSystem.mqh>
 #include <Critiq/main/PositionManager.mqh>
+#include <Critiq/main/OrderFailSafe.mqh>
 #include <Critiq/common/Structures.mqh>
 
 
@@ -12,14 +13,15 @@ class ModelBackend {
         Model *model;
         Limits *limits;
         ProfitSystem *profitSystem;
+        
+        datetime prevBarTime;
+        bool isNewBar();
 
     public:
-
         ModelBackend(void);
         ~ModelBackend(void);
 
         void OnTick();
-        void OnTrade();
         void setRisk(Risk *cRisk) { risk = cRisk; }
         void setModel(Model *cModel) { model = cModel; }
         void setLimits(Limits *cLimits) { limits = cLimits; }
@@ -35,41 +37,58 @@ void ModelBackend::~ModelBackend(void) {
     delete risk;
     delete model;
     delete limits;
+    delete profitSystem;
+    delete positionManager;
+    delete orderFailSafe;
 }
 
 void ModelBackend::OnTick() {
-    // Open position if intraday allowed and no order open
-    if (!positionManager.isOrderOpen()) {
-        if (limits.intraDayAllowed()) {
-            ENUM_ORDER_TYPE signal = model.GetSignal();
-            if (signal == ORDER_TYPE_BUY || signal == ORDER_TYPE_SELL) { 
-                profitSystem.ClearFlags();   
-                PositionParams tradeParams = risk.CalcTradeParams(signal);
-                positionManager.OrderOpen(tradeParams);
+    if (isNewBar()) {
+        // Open position if intraday allowed and no order open
+        if (!positionManager.isOrderOpen()) {
+            if (limits.intraDayAllowed()) {
+                ENUM_ORDER_TYPE signal = model.GetSignal();
+                if (signal == ORDER_TYPE_BUY || signal == ORDER_TYPE_SELL) { 
+                    profitSystem.ClearFlags();   
+                    PositionParams tradeParams = risk.CalcTradeParams(signal);
+                    positionManager.OrderOpen(tradeParams);
+                }
             }
-        }
-
-    // Position management     
-    } else {
-        bool breakEven = profitSystem.BreakEven();
-        if(breakEven) {
-            Print("ERROR CHECKING");
-        }
-   
-        bool moveStops = profitSystem.MoveStops();
-        if(moveStops) {
-            Print("ModelBackend | OnTick | Move stops triggered");
-        }
-        
-        bool takePartials = profitSystem.TakePartials();
-        if (takePartials) {
-            Print("ModelBackend | OnTick | Take partials triggered");
+        // Position management     
+        } else {
+            bool breakEven = profitSystem.BreakEven();
+            bool moveStops = profitSystem.MoveStops();
+            bool takePartials = profitSystem.TakePartials();
         }
     }
 
+    // Failed order management
+    // Failed open
+    if (orderFailSafe.isFailedOpen()) {
+        ENUM_ORDER_TYPE signal = orderFailSafe.getFailedOpenType();
+        profitSystem.ClearFlags();
+        PositionParams tradeParams = risk.CalcTradeParams(signal);
+        positionManager.OrderOpen(tradeParams);
+    }
+    // Failed modify
+    if (orderFailSafe.isFailedModify()) {
+        double sl = orderFailSafe.getFailedModifySL();
+        double tp = orderFailSafe.getFailedModifyTP();
+        positionManager.OrderModify(sl, tp);
+    }
+    // Failed partial close
+    if (orderFailSafe.isFailedPartialClose()) {
+        double volume = orderFailSafe.getFailedPartialCloseVolume();
+        positionManager.OrderPartialClose(volume);
+    }
 }
 
 
-void ModelBackend::OnTrade() {
-    profitSystem.ClearFlags();
+bool ModelBackend::isNewBar() {
+    datetime barTime = iTime(_Symbol, _Period, 0);
+    if (barTime != prevBarTime) {
+        prevBarTime = barTime;
+        return true;
+    }
+    return false;
 }
