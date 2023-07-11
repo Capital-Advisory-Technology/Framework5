@@ -46,19 +46,18 @@ bool ProfitSystem::TakePartials() {
             double otp = PositionGetDouble(POSITION_TP);
             double volume = PositionGetDouble(POSITION_VOLUME);
             ulong type = PositionGetInteger(POSITION_TYPE);
+            double delta = MathAbs(otp - oop);
             double closeVolume;
             if (type == ORDER_TYPE_BUY) { 
-                double delta = otp - oop;
-                double target1_price = (target1 * delta) + oop;  
-                if (iHigh(_Symbol, PERIOD_CURRENT,1) >= target1_price) {
+                double target1_price = NormalizeDouble((target1 * delta) + oop, _Digits);
+                if (iHigh(_Symbol, PERIOD_CURRENT, 1) >= target1_price) {
                     closeVolume = NormalizeDouble(volume/2, 2);
                     positionManager.OrderPartialClose(closeVolume);
                     t1Flag = true;
                 }
             } else if (type == ORDER_TYPE_SELL) {
-                double delta = oop - otp;
-                double target1_price = oop - (target1 * delta);
-                if (iLow(_Symbol, PERIOD_CURRENT,1) <= target1_price) {
+                double target1_price = NormalizeDouble(oop - (target1 * delta), _Digits);
+                if (iLow(_Symbol, PERIOD_CURRENT, 1) <= target1_price) {
                     closeVolume = NormalizeDouble(volume/2, 2);
                     positionManager.OrderPartialClose(closeVolume);
                     t1Flag = true;
@@ -80,19 +79,18 @@ bool ProfitSystem::MoveStops() {
             double newStop;
 
             if (type == ORDER_TYPE_BUY) { 
-                double trigger_price = (target1 * delta) + oop;  
+                double trigger_price = NormalizeDouble((target1 * delta) + oop, _Digits);
                 if (iHigh(_Symbol, PERIOD_CURRENT,1) >= trigger_price) {
-                    newStop = oop + (stop1 * delta);
+                    newStop = NormalizeDouble(oop + (stop1 * delta), _Digits);
                     positionManager.OrderModify(newStop, otp);
                     s1Flag = true;
-                    Print("Profit System | MoveStops |", " OOP: ", oop, " SL: ", osl, " TP: ", otp, " Trigger: ", trigger_price, " NewStop: ", newStop);
                 }
             } else if (type == ORDER_TYPE_SELL) {
-                double trigger_price = oop - (target1 * delta);
+                double trigger_price = NormalizeDouble(oop - (target1 * delta), _Digits);
                 if (iLow(_Symbol, PERIOD_CURRENT,1) <= trigger_price) {
-                    newStop = oop - (stop1 * delta);
+                    newStop = NormalizeDouble(oop - (stop1 * delta), _Digits);
+                    positionManager.OrderModify(newStop, otp);
                     s1Flag = true;
-                    Print("Profit System | MoveStops |", " OOP: ", oop, " SL: ", osl, " TP: ", otp, " Trigger: ", trigger_price, " NewStop: ", newStop);
                 }
             }
         }
@@ -110,13 +108,13 @@ bool ProfitSystem::BreakEven() {
             double delta = MathAbs(otp - oop);
 
             if (type == ORDER_TYPE_BUY) { 
-                double trigger_price = oop + (breakeven * delta);  
+                double trigger_price = NormalizeDouble(oop + (breakeven * delta), _Digits);
                 if (iHigh(_Symbol, PERIOD_CURRENT,1) >= trigger_price) {
                     positionManager.OrderModify(oop, otp);
                     breakevenFlag = true;
                 }
             } else if (type == ORDER_TYPE_SELL) {
-                double trigger_price = oop - (breakeven * delta);
+                double trigger_price = NormalizeDouble(oop - (breakeven * delta), _Digits);
                 if (iLow(_Symbol, PERIOD_CURRENT,1) <= trigger_price) {
                     positionManager.OrderModify(oop, otp);
                     breakevenFlag = true;
