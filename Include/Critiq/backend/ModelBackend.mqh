@@ -78,8 +78,10 @@ void ModelBackend::OnTick() {
     int failedModifies = orderFailSafe.getFailedModifySize();
     if (failedModifies > 0) {
         for (int i = 0; i < failedModifies; i++) {
-            PositionModifyParams params = orderFailSafe.getFailedModify(i);
-            positionManager.OrderModify(params.slPrice, params.tpPrice);
+            double sl = orderFailSafe.getFailedModifySL(i);
+            double tp = orderFailSafe.getFailedModifyTP(i);
+            // PositionModifyParams params = orderFailSafe.getFailedModify(i);
+            positionManager.OrderModify(sl, tp);
         }
     }
 
@@ -91,11 +93,6 @@ void ModelBackend::OnTick() {
             positionManager.OrderPartialClose(volume);
         }
     }
-}
-
-
-void ModelBackend::OnTrade() {
-    profitSystem.ClearFlags();
 }
 
 bool ModelBackend::isNewBar() {

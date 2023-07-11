@@ -38,6 +38,7 @@ bool PositionManager::OrderModify(double sl, double tp) {
 
 bool PositionManager::OrderPartialClose(double cVolume) {
     if (trade.PositionClosePartial(_Symbol, cVolume)) return true;
+    orderFailSafe.addFailedSizeOut(cVolume);
     return false;
 }
 
