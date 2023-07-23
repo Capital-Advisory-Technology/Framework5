@@ -2,6 +2,8 @@
 #include <Critiq/main/Risk.mqh>
 #include <Critiq/main/Limits.mqh>
 #include <Critiq/backend/ModelBackend.mqh>
+#include <Critiq/common/Export.mqh>
+
 
 // Strategy models
 #include <Critiq/Models/Dewa.mqh>
@@ -55,6 +57,8 @@ ModelBackend *modelBackend = new ModelBackend;
 Atr *atr = new Atr;
 Dewa *dewa = new Dewa;
 
+// DataExport *dataExport = new DataExport;
+
 int OnInit() {
     // SET RISK
     atr.InitParams(atr_period, atr_multiplier);
@@ -91,19 +95,26 @@ void OnTick() {
     modelBackend.OnTick();
 }
 
-void OnTrade() {
+void OnTesterInit() {
+    dataExport.OnTesterInit();
+} 
+
+
+double OnTester() {
+    return modelBackend.OnTester();
 }
+
+void OnTesterDeinit() {
+    dataExport.OnTesterDeinit();
+    // modelBackend.OnTesterDeinit();
+}
+
+void OnTesterPass() {}
+
+void OnTimer() {}
+
+void OnTrade() {}
 
 void OnTradeTransaction(const MqlTradeTransaction &trans, 
                         const MqlTradeRequest &request, 
                         const MqlTradeResult &result) {}
-
-void OnTimer() {}
-
-double OnTester() {return(0);}
-
-int onTesterInit() {return(0);}
-
-void OnTesterDeinit() {}
-
-void OnTesterPass() {}
