@@ -9,6 +9,8 @@
 #include <Critiq/Models/Dewa.mqh>
 #include <Critiq/Models/Risk/ATR.mqh>
 
+static string strategy_name = "DewaTest";
+
 // Main - Risk parameters
 input group "Risk"
 input double rpp = 1.0; // Risk per position
@@ -96,9 +98,8 @@ void OnTick() {
 }
 
 void OnTesterInit() {
-    dataExport.OnTesterInit();
+    dataExport.OnTesterInit(strategy_name);
 } 
-
 
 double OnTester() {
     return modelBackend.OnTester();
@@ -106,7 +107,6 @@ double OnTester() {
 
 void OnTesterDeinit() {
     dataExport.OnTesterDeinit();
-    // modelBackend.OnTesterDeinit();
 }
 
 void OnTesterPass() {}

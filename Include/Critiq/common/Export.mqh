@@ -1,15 +1,22 @@
+#include <Critiq/common/Json.mqh>
+
 class DataExport {
     protected:
         int db;
+        string strategyName;
+        int strategyId;
         double stat_values[3];
 
         void InitDatabase();
+
+        void SelectStrategy();
+        void InsertStrategy();
 
     public:
         DataExport();
         ~DataExport();
 
-        void OnTesterInit();
+        void OnTesterInit(string strategyName);
         void OnTester();
         void OnTesterDeinit();
 };
@@ -19,18 +26,16 @@ extern DataExport *dataExport = new DataExport;
 DataExport::DataExport() {}
 DataExport::~DataExport() {}
 
-void DataExport::OnTesterInit() {
-    db = DatabaseOpen("critiq", DATABASE_OPEN_CREATE | DATABASE_OPEN_READWRITE );
-    if (db == INVALID_HANDLE) {
-        Print(__FUNCTION__, ": Cannot open database");
-    }
+void DataExport::OnTesterInit(string cStrategyName) {
+    strategyName = cStrategyName;
     InitDatabase();
+    InsertStrategy();
 }
 
 void DataExport::OnTester() {
-    double deposit = TesterStatistics(STAT_INITIAL_DEPOSIT);
-    double TotalNetProfit = TesterStatistics(STAT_PROFIT);
-    double MaximalDrawdown = MathMax(TesterStatistics(STAT_EQUITY_DD),TesterStatistics(STAT_BALANCE_DD));
+    double deposit = NormalizeDouble((STAT_INITIAL_DEPOSIT), 2);
+    double TotalNetProfit = NormalizeDouble(TesterStatistics(STAT_PROFIT), 2);
+    double MaximalDrawdown = NormalizeDouble(MathMax(TesterStatistics(STAT_EQUITY_DD),TesterStatistics(STAT_BALANCE_DD)), 4);
     stat_values[0]=deposit;
     stat_values[1]=TotalNetProfit;
     stat_values[2]=MaximalDrawdown;
@@ -46,29 +51,58 @@ void DataExport::OnTesterDeinit() {
     string parameter[];
     uint   parameter_count;
 
+    bool failed = false;
+    DatabaseTransactionBegin(db);
     while(FrameNext(pass,name,id,val,stat_values)) {
         if (FrameInputs(pass, parameter, parameter_count)) {
+            CJAVal json_inputs;
+            string sep = "=";
+            ushort uSep;
+            uSep = StringGetCharacter(sep, 0);
+            
             for (uint i=0; i < parameter_count; i++) {
-                // Print("Parameter ",i," = ",parameter[i]);
+                string result[];
+                StringSplit(parameter[i], uSep, result);
+                json_inputs[result[0]] = result[1];
             }
-        }
 
-        for (int i=0; i < ArraySize(stat_values); i++) {
-            // Print("Value ",i," = ",stat_values[i]);
+            string query = StringFormat("INSERT INTO backtests (strategy_id, symbol, inputs) VALUES (%d, '%s', '%s')", strategyId, _Symbol, json_inputs.Serialize());
+            if(!DatabaseExecute(db, query)) {
+                Print("DB: ", " insert backtest failed with code ", GetLastError());
+                failed = true;
+                break;
+            }
+
+            // TODO: get backtest id and insert stats
         }
     }
 
-
+    if(failed) {
+        DatabaseTransactionRollback(db);
+        PrintFormat("%s: DatabaseExecute() failed with code %d", __FUNCTION__, GetLastError());
+        DatabaseClose(db);
+        return;
+    }
+    
+    DatabaseTransactionCommit(db);
+    Print("DB: success inserted optimization results!");
     DatabaseClose(db);
 }
 
 
 void DataExport::InitDatabase() {
+    db = DatabaseOpen("critiq", DATABASE_OPEN_CREATE | DATABASE_OPEN_READWRITE );
+    if (db == INVALID_HANDLE) Print(__FUNCTION__, ": Cannot open database");
 
     if(!DatabaseTableExists(db, "strategies")) {
-        if(!DatabaseExecute(db, "CREATE TABLE IF NOT EXISTS strategies(id INTEGER PRIMARY KEY, name TEXT NOT NULL, UNIQUE(name))")) {
-                 Print("DB: ", " create table failed with code ", GetLastError());
-        DatabaseClose(db);
+        string query = "CREATE TABLE IF NOT EXISTS strategies("
+                        "id INTEGER PRIMARY KEY, "
+                        "name TEXT NOT NULL, "
+                        "UNIQUE(name))";
+
+        if(!DatabaseExecute(db, query)) {
+            Print("DB: ", " create table failed with code ", GetLastError());
+            DatabaseClose(db);
         }
     }
 
@@ -101,4 +135,40 @@ void DataExport::InitDatabase() {
             DatabaseClose(db);
         }
     }
+}
+
+void DataExport::SelectStrategy() {
+    string selectQuery = StringFormat("SELECT id FROM strategies WHERE name = '%s'", strategyName);
+    int request=DatabasePrepare(db, selectQuery);
+    
+    // Obtain the result of the request
+    if(request!=INVALID_HANDLE) {
+        for(int i=0; DatabaseRead(request); i++) {
+            if(!DatabaseColumnInteger(request, 0, strategyId)){
+                Print("DB: ", " read strategy id failed with code ", GetLastError());
+                DatabaseClose(db);
+                return;
+            }
+        }
+    // Handle failed request
+    } else {
+        Print("DB: ", " request failed with code ", GetLastError());
+        DatabaseClose(db);
+        return;
+    }
+}
+
+void DataExport::InsertStrategy() {
+    SelectStrategy();
+    if(strategyId == 0) {
+        string insertQuery = StringFormat("INSERT INTO strategies (name) VALUES ('%s')", strategyName);
+        if(!DatabaseExecute(db, insertQuery)) {
+            Print("DB: ", " insert strategy failed with code ", GetLastError());
+            DatabaseClose(db);
+            return;
+        }
+    }
+    SelectStrategy();
+
+    Print("Strategy ID: ", strategyId, " Name: ", strategyName);
 }
