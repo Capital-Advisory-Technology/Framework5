@@ -12,6 +12,8 @@ class DataExport {
         void SelectStrategy();
         void InsertStrategy();
 
+        int SelectBacktest(string symbol, string inputs);
+
     public:
         DataExport();
         ~DataExport();
@@ -55,25 +57,38 @@ void DataExport::OnTesterDeinit() {
     DatabaseTransactionBegin(db);
     while(FrameNext(pass,name,id,val,stat_values)) {
         if (FrameInputs(pass, parameter, parameter_count)) {
-            CJAVal json_inputs;
-            string sep = "=";
+            int backtestId = 0;
             ushort uSep;
+            string sep = "=";
+            CJAVal jsonInputs;
             uSep = StringGetCharacter(sep, 0);
             
             for (uint i=0; i < parameter_count; i++) {
                 string result[];
                 StringSplit(parameter[i], uSep, result);
-                json_inputs[result[0]] = result[1];
+                jsonInputs[result[0]] = result[1];
             }
+            
+            string jsonInputsStr = jsonInputs.Serialize();
+            backtestId = SelectBacktest(_Symbol, jsonInputsStr);
 
-            string query = StringFormat("INSERT INTO backtests (strategy_id, symbol, inputs) VALUES (%d, '%s', '%s')", strategyId, _Symbol, json_inputs.Serialize());
-            if(!DatabaseExecute(db, query)) {
-                Print("DB: ", " insert backtest failed with code ", GetLastError());
-                failed = true;
-                break;
+            if (backtestId == 0){
+                string insertInputsQuery = StringFormat("INSERT INTO backtests (strategy_id, symbol, inputs) VALUES (%d, '%s', '%s')", strategyId, _Symbol, jsonInputsStr);            
+                if(!DatabaseExecute(db, insertInputsQuery)) {
+                    Print("DB: backtest input insert failed with code ", GetLastError());
+                    failed = true;
+                    continue;
+                }
+
+                backtestId = SelectBacktest(_Symbol, jsonInputsStr);
+                string insertStatsQuery = StringFormat("INSERT INTO backtests_stats (backtest_id, deposit, profit, max_dd) VALUES (%d, %f, %f, %f)", backtestId, stat_values[0], stat_values[1], stat_values[2]);
+                if(!DatabaseExecute(db, insertStatsQuery)) {
+                    Print("DB: backtest stats insert failed with code ", GetLastError());
+                    failed = true;
+                    continue;
+                }
+
             }
-
-            // TODO: get backtest id and insert stats
         }
     }
 
@@ -88,7 +103,6 @@ void DataExport::OnTesterDeinit() {
     Print("DB: success inserted optimization results!");
     DatabaseClose(db);
 }
-
 
 void DataExport::InitDatabase() {
     db = DatabaseOpen("critiq", DATABASE_OPEN_CREATE | DATABASE_OPEN_READWRITE );
@@ -171,4 +185,21 @@ void DataExport::InsertStrategy() {
     SelectStrategy();
 
     Print("Strategy ID: ", strategyId, " Name: ", strategyName);
+}
+
+int DataExport::SelectBacktest(string symbol, string inputs) {
+    string selectQuery = StringFormat("SELECT id FROM backtests WHERE strategy_id = %d AND symbol = '%s' AND inputs = '%s'", strategyId, symbol, inputs);
+    int request=DatabasePrepare(db, selectQuery);
+    
+    int backtestId = 0;
+    // Obtain the result of the request
+    if(request!=INVALID_HANDLE) {
+        for(int i=0; DatabaseRead(request); i++) {
+            if(!DatabaseColumnInteger(request, 0, backtestId)){
+                Print("DB: ", " read backtest id failed with code ", GetLastError());
+                return 0;
+            }
+        }
+    }
+    return backtestId;
 }

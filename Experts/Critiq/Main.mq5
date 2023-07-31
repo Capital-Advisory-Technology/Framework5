@@ -102,7 +102,8 @@ void OnTesterInit() {
 } 
 
 double OnTester() {
-    return modelBackend.OnTester();
+    dataExport.OnTester();
+    return 0;
 }
 
 void OnTesterDeinit() {

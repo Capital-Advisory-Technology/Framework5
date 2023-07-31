@@ -21,13 +21,14 @@ class ModelBackend {
         ModelBackend(void);
         ~ModelBackend(void);
 
-        void OnTick();
         void setRisk(Risk *cRisk) { risk = cRisk; }
         void setModel(Model *cModel) { model = cModel; }
         void setLimits(Limits *cLimits) { limits = cLimits; }
         void setProfitSystem(double cT1, double cT2, double cS1, double cS2, double cBE) {
             profitSystem = new ProfitSystem(cT1, cT2, cS1, cS2, cBE);
         }
+
+        void OnTick();
 };
 
 extern ModelBackend *modelBackend;
