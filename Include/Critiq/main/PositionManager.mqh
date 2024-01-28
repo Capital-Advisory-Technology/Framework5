@@ -12,13 +12,15 @@ class PositionManager {
         PositionManager(void);
         ~PositionManager(void);
 
+        void PositionOpen(PositionParams &params);
         void OrderOpen(PositionParams &params);
-                       
-        void OrderClose();
+
+        void PositionClose();
+
         void OrderModify(double sl, double tp);
         void OrderPartialClose(double volume);   
 
-        bool isOrderOpen() { return PositionsTotal() != 0;};
+        bool isPositionOpen() { return PositionsTotal() != 0;};
 };
 
 extern PositionManager *positionManager = new PositionManager;
@@ -29,8 +31,14 @@ void PositionManager::~PositionManager(void) {
     delete trade;
 }
 
-void PositionManager::OrderOpen(PositionParams &params) {
+void PositionManager::PositionOpen(PositionParams &params) {
     if (!trade.PositionOpen(_Symbol, params.type, params.volume, params.openPrice, params.slPrice, params.tpPrice, "")) {
+        orderFailSafe.setFailedOpenType(params.type);
+    }
+}
+
+void PositionManager::OrderOpen(PositionParams &params) {
+    if (!trade.OrderOpen(_Symbol, params.type, params.volume, params.openPrice, params.slPrice, params.tpPrice, "")) {
         orderFailSafe.setFailedOpenType(params.type);
     }
 }
@@ -47,7 +55,7 @@ void PositionManager::OrderPartialClose(double cVolume) {
     }
 }
 
-void PositionManager::OrderClose() {
+void PositionManager::PositionClose() {
     ulong oTicket = PositionGetTicket(0);
     trade.PositionClose(oTicket, ULONG_MAX);
 }

@@ -6,8 +6,10 @@
 #include <Critiq/main/OrderFailSafe.mqh>
 #include <Critiq/common/Structures.mqh>
 
+// New: Replaced PositionOpen with OrderOpen
+// Result: Positions are set rather than executed at market 
 
-class ModelBackend {
+class ModelBackendLimit {
     protected:
         Risk *risk;
         Model *model;
@@ -18,8 +20,8 @@ class ModelBackend {
         bool isNewBar();
 
     public:
-        ModelBackend(void);
-        ~ModelBackend(void);
+        ModelBackendLimit(void);
+        ~ModelBackendLimit(void);
 
         void OnTick();
         void setRisk(Risk *cRisk) { risk = cRisk; }
@@ -30,10 +32,10 @@ class ModelBackend {
         }
 };
 
-extern ModelBackend *modelBackend;
+extern ModelBackendLimit *ModelBackendLimit;
 
-void ModelBackend::ModelBackend(void) {}
-void ModelBackend::~ModelBackend(void) {
+void ModelBackendLimit::ModelBackendLimit(void) {}
+void ModelBackendLimit::~ModelBackendLimit(void) {
     delete risk;
     delete model;
     delete limits;
@@ -42,7 +44,7 @@ void ModelBackend::~ModelBackend(void) {
     delete orderFailSafe;
 }
 
-void ModelBackend::OnTick() {
+void ModelBackendLimit::OnTick() {
     if (isNewBar()) {
         // Open position if intraday allowed and no order open
         if (!positionManager.isPositionOpen()) {
@@ -51,7 +53,7 @@ void ModelBackend::OnTick() {
                 if (signal == ORDER_TYPE_BUY || signal == ORDER_TYPE_SELL) { 
                     profitSystem.ClearFlags();   
                     PositionParams tradeParams = risk.CalcTradeParams(signal);
-                    positionManager.PositionOpen(tradeParams);
+                    positionManager.OrderOpen(tradeParams);
                 }
             }
         // Position management     
@@ -68,7 +70,7 @@ void ModelBackend::OnTick() {
         ENUM_ORDER_TYPE signal = orderFailSafe.getFailedOpenType();
         profitSystem.ClearFlags();
         PositionParams tradeParams = risk.CalcTradeParams(signal);
-        positionManager.PositionOpen(tradeParams);
+        positionManager.OrderOpen(tradeParams);
     }
     // Failed modify
     if (orderFailSafe.isFailedModify()) {
@@ -83,7 +85,7 @@ void ModelBackend::OnTick() {
     }
 }
 
-bool ModelBackend::isNewBar() {
+bool ModelBackendLimit::isNewBar() {
     datetime barTime = iTime(_Symbol, _Period, 0);
     if (barTime != prevBarTime) {
         prevBarTime = barTime;

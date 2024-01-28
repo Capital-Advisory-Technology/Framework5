@@ -71,6 +71,10 @@ PositionParams Risk::CalcTradeParams(ENUM_ORDER_TYPE orderType) {
     params.tpPrice = GetTPprice(slPips, params.type, inputPosRatio);
     params.volume = CalculateLotSize(riskPerPosition, slPips);
 
+    Print("params.type: " + params.type);
+    Print("params.openPrice: " + params.openPrice);
+    Print("params.tpPrice: " + params.tpPrice);
+
     return params;
 }
 
