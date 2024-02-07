@@ -30,7 +30,7 @@ class Dewa : public Model {
         
 };
 
-extern Dewa *dewa = new Dewa;
+extern Dewa *dewa;
 
 
 // Confirms signal with Waddah Explosion colour
