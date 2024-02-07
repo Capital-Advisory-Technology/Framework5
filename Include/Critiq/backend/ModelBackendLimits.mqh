@@ -46,6 +46,7 @@ void ModelBackendLimit::~ModelBackendLimit(void) {
 
 void ModelBackendLimit::OnTick() {
     if (isNewBar()) {
+        Print()
         // Open position if intraday allowed and no order open
         if (!positionManager.isPositionOpen()) {
             if (limits.intraDayAllowed()) {
