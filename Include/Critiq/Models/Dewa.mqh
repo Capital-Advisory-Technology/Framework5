@@ -27,11 +27,9 @@ class Dewa : public Model {
                 };
         
         virtual ENUM_ORDER_TYPE GetSignal();
-        
 };
 
 extern Dewa *dewa;
-
 
 // Confirms signal with Waddah Explosion colour
 ENUM_ORDER_TYPE Dewa::GetSignal() {

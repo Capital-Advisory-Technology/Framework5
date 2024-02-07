@@ -15,7 +15,7 @@ class aATR : public Model {
         double GetValue();
 };
 
-extern aATR *matrModel = new aATR;
+extern aATR *matrModel;
 
 void aATR::aATR(void) : inpPeriod(14) {}
 void aATR::~aATR(void) {}
