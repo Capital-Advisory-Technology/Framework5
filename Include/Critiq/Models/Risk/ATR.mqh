@@ -16,7 +16,7 @@ class Atr : public RiskModel {
         virtual double GetValue();
 };
 
-extern Atr *atr;
+extern Atr *atr = new Atr;
 
 void Atr::Atr(void) : inpPeriod(14),
                      inpMultiplier(0.7) {}
