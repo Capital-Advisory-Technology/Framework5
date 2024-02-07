@@ -14,7 +14,7 @@ class Limits {
         bool intraDayAllowed();
 };
 
-extern Limits *limits;
+extern Limits *limits = new Limits;
 
 Limits::Limits(void) : timeFrom(0),
                        timeTo(0) {}

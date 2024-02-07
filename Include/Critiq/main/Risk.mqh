@@ -38,7 +38,7 @@ class Risk {
         
 };
 
-extern Risk *risk;
+extern Risk *risk = new Risk;
 
 Risk::Risk(void) : inputRpp(1.0),
                    inputPosRatio(10) {}

@@ -21,7 +21,7 @@ class PositionManager {
         bool isOrderOpen() { return PositionsTotal() != 0;};
 };
 
-PositionManager *positionManager = new PositionManager;
+extern PositionManager *positionManager = new PositionManager;
 
 PositionManager::PositionManager(void): trade(new CTrade) {}
 
