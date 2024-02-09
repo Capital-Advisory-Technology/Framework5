@@ -28,7 +28,7 @@ class OrderFailSafe {
         double getFailedPartialCloseVolume();
 };
 
-extern OrderFailSafe *orderFailSafe = new OrderFailSafe;
+OrderFailSafe *orderFailSafe = new OrderFailSafe;
 
 OrderFailSafe::OrderFailSafe(void) {
     failedOpen = false;
