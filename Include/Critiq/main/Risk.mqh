@@ -1,6 +1,5 @@
 #include <Critiq/backend/RiskModel.mqh>
 #include <Critiq/main/Calculations.mqh>
-#include <Critiq/main/ProfitSystem.mqh>
 #include <Critiq/common/Structures.mqh>
 
 // Placeholder for risk model.
