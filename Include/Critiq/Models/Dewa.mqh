@@ -26,7 +26,7 @@ class Dewa : public Model {
                                             inpFastLength, inpSlowLength, inpBbLength, inpBDev, inpSmooth);
                 };
         
-        virtual ENUM_ORDER_TYPE GetSignal();
+        virtual ENUM_ORDER_TYPE getSignal();
         
 };
 
@@ -34,7 +34,7 @@ extern Dewa *dewa;
 
 
 // Confirms signal with Waddah Explosion colour
-ENUM_ORDER_TYPE Dewa::GetSignal() {
+ENUM_ORDER_TYPE Dewa::getSignal() {
     double _dema_signal[];
     double _waddah_colour[];
 

@@ -90,20 +90,3 @@ void OnDeinit(const int reason) {
 void OnTick() {
     modelBackend.OnTick();
 }
-
-void OnTrade() {
-}
-
-void OnTradeTransaction(const MqlTradeTransaction &trans, 
-                        const MqlTradeRequest &request, 
-                        const MqlTradeResult &result) {}
-
-void OnTimer() {}
-
-double OnTester() {return(0);}
-
-int onTesterInit() {return(0);}
-
-void OnTesterDeinit() {}
-
-void OnTesterPass() {}

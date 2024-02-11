@@ -15,11 +15,11 @@ class ProfitSystem {
         ProfitSystem(double cT1, double cT2, double cS1, double cS2, double cBE);
         ~ProfitSystem();
 
-        bool TakePartials();
-        bool MoveStops();
-        bool BreakEven();
+        bool takePartials();
+        bool moveStops();
+        bool breakEven();
 
-        void ClearFlags();
+        void clearFlags();
 
 };
 
@@ -38,7 +38,7 @@ ProfitSystem::ProfitSystem(double cT1, double cT2, double cS1, double cS2, doubl
 ProfitSystem::~ProfitSystem() {
 }
 
-bool ProfitSystem::TakePartials() {
+bool ProfitSystem::takePartials() {
     if (!t1Flag) {
     
         if (PositionSelect(_Symbol)) { 
@@ -52,14 +52,14 @@ bool ProfitSystem::TakePartials() {
                 double target1_price = NormalizeDouble((target1 * delta) + oop, _Digits);
                 if (iHigh(_Symbol, PERIOD_CURRENT, 1) >= target1_price) {
                     closeVolume = NormalizeDouble(volume/2, 2);
-                    positionManager.OrderPartialClose(closeVolume);
+                    positionManager.orderPartialClose(closeVolume);
                     t1Flag = true;
                 }
             } else if (type == ORDER_TYPE_SELL) {
                 double target1_price = NormalizeDouble(oop - (target1 * delta), _Digits);
                 if (iLow(_Symbol, PERIOD_CURRENT, 1) <= target1_price) {
                     closeVolume = NormalizeDouble(volume/2, 2);
-                    positionManager.OrderPartialClose(closeVolume);
+                    positionManager.orderPartialClose(closeVolume);
                     t1Flag = true;
                 }
             }
@@ -68,7 +68,7 @@ bool ProfitSystem::TakePartials() {
     return t1Flag;
 }
 
-bool ProfitSystem::MoveStops() {
+bool ProfitSystem::moveStops() {
     if (!s1Flag) {
         if (PositionSelect(_Symbol)) { 
             double oop = PositionGetDouble(POSITION_PRICE_OPEN);
@@ -82,14 +82,14 @@ bool ProfitSystem::MoveStops() {
                 double trigger_price = NormalizeDouble((target1 * delta) + oop, _Digits);
                 if (iHigh(_Symbol, PERIOD_CURRENT,1) >= trigger_price) {
                     newStop = NormalizeDouble(oop + (stop1 * delta), _Digits);
-                    positionManager.OrderModify(newStop, otp);
+                    positionManager.orderModify(newStop, otp);
                     s1Flag = true;
                 }
             } else if (type == ORDER_TYPE_SELL) {
                 double trigger_price = NormalizeDouble(oop - (target1 * delta), _Digits);
                 if (iLow(_Symbol, PERIOD_CURRENT,1) <= trigger_price) {
                     newStop = NormalizeDouble(oop - (stop1 * delta), _Digits);
-                    positionManager.OrderModify(newStop, otp);
+                    positionManager.orderModify(newStop, otp);
                     s1Flag = true;
                 }
             }
@@ -98,7 +98,7 @@ bool ProfitSystem::MoveStops() {
     return s1Flag;
 }
 
-bool ProfitSystem::BreakEven() {
+bool ProfitSystem::breakEven() {
     if (!breakevenFlag) {
         if (PositionSelect(_Symbol)) { 
             double oop = PositionGetDouble(POSITION_PRICE_OPEN);
@@ -110,13 +110,13 @@ bool ProfitSystem::BreakEven() {
             if (type == ORDER_TYPE_BUY) { 
                 double trigger_price = NormalizeDouble(oop + (breakeven * delta), _Digits);
                 if (iHigh(_Symbol, PERIOD_CURRENT,1) >= trigger_price) {
-                    positionManager.OrderModify(oop, otp);
+                    positionManager.orderModify(oop, otp);
                     breakevenFlag = true;
                 }
             } else if (type == ORDER_TYPE_SELL) {
                 double trigger_price = NormalizeDouble(oop - (breakeven * delta), _Digits);
                 if (iLow(_Symbol, PERIOD_CURRENT,1) <= trigger_price) {
-                    positionManager.OrderModify(oop, otp);
+                    positionManager.orderModify(oop, otp);
                     breakevenFlag = true;
                 }
             }
@@ -125,7 +125,7 @@ bool ProfitSystem::BreakEven() {
     return breakevenFlag;
 }
 
-void ProfitSystem::ClearFlags() {
+void ProfitSystem::clearFlags() {
     t1Flag = false;
     s1Flag = false;
     breakevenFlag = false;

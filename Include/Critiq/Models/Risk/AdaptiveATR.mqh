@@ -11,11 +11,11 @@ class aATR : public Model {
         ~aATR(void);
 
         void Init(int cPeriod);
-        // bool GetSignal();
-        double GetValue();
+        // bool getSignal();
+        double getPipValue();
 };
 
-extern aATR *matrModel = new aATR;
+extern aATR *matrModel;
 
 void aATR::aATR(void) : inpPeriod(14) {}
 void aATR::~aATR(void) {}
@@ -34,7 +34,7 @@ void aATR::Init(int cPeriod) {
      }
 }
 
-// bool aATR::GetSignal() {
+// bool aATR::getSignal() {
 //     if(CopyBuffer(atr_handle,0,0,2,_atr_signal)==2) {
 //         return true;
 //     }
@@ -44,7 +44,7 @@ void aATR::Init(int cPeriod) {
 //     }
 // }
 
-double aATR::GetValue() {
+double aATR::getPipValue() {
     if(CopyBuffer(atr_handle,0,0,2,_atr_signal)==2) {
         return _atr_signal[1];
     }
