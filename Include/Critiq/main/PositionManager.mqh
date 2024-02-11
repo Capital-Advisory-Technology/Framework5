@@ -33,6 +33,8 @@ void PositionManager::orderOpen(PositionParams &params) {
     if (!trade.PositionOpen(_Symbol, params.type, params.volume, params.openPrice, params.slPrice, params.tpPrice, "")) {
         orderFailSafe.setFailedOpenType(params.type);
     }
+    
+    Print("Position Manager order open: " , trade.ResultRetcode());
 }
 
 void PositionManager::orderModify(double sl, double tp) {

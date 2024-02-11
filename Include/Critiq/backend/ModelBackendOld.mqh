@@ -48,17 +48,12 @@ void ModelBackend::OnTick() {
     if (isNewBar()) {
         // Open position if intraday allowed and no order open
         if (!positionManager.isOrderOpen()) {
-            
             if (limits.intraDayAllowed()) {
-
                 ENUM_ORDER_TYPE signal = model.getSignal();
-                
                 if (signal == ORDER_TYPE_BUY || signal == ORDER_TYPE_SELL) { 
-
                     profitSystem.clearFlags();   
                     PositionParams tradeParams = risk.getOrderParams(signal);
                     positionManager.orderOpen(tradeParams);
-
                 }
             }
         // Position management     
