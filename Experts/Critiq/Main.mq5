@@ -68,7 +68,7 @@ int OnInit() {
     dewa.Init(
         dewa_period, dewa_volume, dewa_price,
         wadPrice, wadSensitivity, wadFLength,
-         wadSLength, wadBLength, wadBDev, wadSmooth
+        wadSLength, wadBLength, wadBDev, wadSmooth
     );                            
     modelBackend.setModel(dewa);
 
