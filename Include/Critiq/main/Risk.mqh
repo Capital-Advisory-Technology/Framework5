@@ -3,7 +3,7 @@
 #include <Critiq/common/Structures.mqh>
 
 // Placeholder for risk model.
-// Handles order values 
+// Handles order values
 
 class Risk {
     protected:
