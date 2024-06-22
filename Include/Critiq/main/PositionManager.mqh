@@ -7,7 +7,6 @@
 class PositionManager {
     protected:  
         CTrade  *trade;
-        
     public:
         PositionManager(void);
         ~PositionManager(void);
@@ -16,11 +15,11 @@ class PositionManager {
                        
         void orderClose();
         void orderModify(double sl, double tp);
-        void orderPartialClose(double volume);   
+        void orderPartialClose(double volume);
 
         bool isOrderOpen() { return PositionsTotal() != 0;};
 };
-
+ 
 PositionManager *positionManager = new PositionManager;
 
 PositionManager::PositionManager(void): trade(new CTrade) {}
