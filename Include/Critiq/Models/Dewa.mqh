@@ -1,5 +1,5 @@
 #include <Critiq/backend/Model.mqh>
-#include <Critiq/common/Enums.mqh>
+#include <Critiq/common/enums.mqh>
 
 string demaPath = "Critiq-Indicators\\GeneralizedDoubleDEMA";
 string waddahPath = "Critiq-Indicators\\modified_explosion";

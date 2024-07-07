@@ -1,1 +1,0 @@
-// returns getSignal to Model()
