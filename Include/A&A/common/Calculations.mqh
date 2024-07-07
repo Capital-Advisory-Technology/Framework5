@@ -52,3 +52,34 @@ double UsedPrice(int orderType) {
    }
    return price;
 }
+
+// Return final risk value (%)
+double CalcPosRisk(double reduction, double rpp) {
+    
+    // Recalculate for all risk reducers
+    double percent = CalcLossReducedRisk(reduction, rpp);
+
+    return percent;
+}
+
+
+// Return reduced risk if applicable
+double CalcLossReducedRisk(double reduction, double cRpp) {
+    if (reduction == 0) return cRpp; 
+
+    HistorySelect(0, TimeCurrent());
+        uint total = HistoryDealsTotal();
+        ulong ticket = 0;
+        double profit;
+        double reducedRisk = cRpp;
+
+        for (uint i=total; i>0; i--) {
+            if ((ticket = HistoryDealGetTicket(i)) > 0) {
+                profit=HistoryDealGetDouble(ticket,DEAL_PROFIT);
+                if (profit < 0) reducedRisk -= reducedRisk * reduction;
+                else if (profit == .0) continue;
+                else break;
+            }
+        }
+    return NormalizeDouble(reducedRisk, 4);
+}

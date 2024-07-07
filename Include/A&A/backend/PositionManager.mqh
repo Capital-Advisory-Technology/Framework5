@@ -1,5 +1,6 @@
 #include <Trade/Trade.mqh>
 #include <A&A/common/Structures.mqh>
+#include <A&A/common/Calculations.mqh>
 
 class PositionManager {
     protected:  

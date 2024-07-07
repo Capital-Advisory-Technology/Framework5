@@ -3,13 +3,16 @@
 #include <A&A/signal/custom/LinearRegression.mqh>
 #include <A&A/risk/custom/Atr.mqh>
 
+input double riskPerPos = 2;
+input double riskMax = 25;
+input double riskToReward = 5;
+
 input int lrPeriod = 25;
 input ENUM_APPLIED_PRICE lrPrice = PRICE_HIGH;
 
 input int atrPeriod = 14;
 input double atrMult = 1.5;
 
-RiskManager *riskManager = new RiskManager;
 Frame *frame = new Frame;
 
 LinearRegression *linearRegression = new LinearRegression;
@@ -17,20 +20,12 @@ Atr *atr = new Atr;
 
 int OnInit() {
     
-    // init signal model
     linearRegression.Init(lrPeriod, lrPrice);
-
-    // init custom risk and set it
     atr.Init(atrPeriod, atrMult);
-    riskManager.Init(atr);
-    
-    // init execution model
-    
+
+    frame.initRiskParams(riskPerPos, 0, 5);
     frame.setSignal(linearRegression);
-    frame.setRisk(riskManager);
-    
-    // add both Frame
-    // Frame.setSignal(linearRegression);
+    frame.setRisk(atr);
 
     return(INIT_SUCCEEDED);
 }

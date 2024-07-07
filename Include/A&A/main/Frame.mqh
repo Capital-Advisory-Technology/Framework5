@@ -1,27 +1,55 @@
-#include <A&A/backend/RiskManager.mqh>
+// #include <A&A/backend/RiskManager.mqh>
+#include <A&A/common/Structures.mqh>
 #include <A&A/backend/PositionManager.mqh>
 #include <A&A/signal/Signal.mqh>
+#include <A&A/risk/Risk.mqh>
 
 class Frame {
     protected:
         Signal *signal;
-        RiskManager *riskManager;
+        Risk *risk;
 
     private:
-        datetime prevBarTime;
-        bool isNewBar();
+        // main risk params
+        double riskPercent;
+        double riskMax;
+        double riskToReward;
 
     public:
         Frame(void);
         ~Frame(void);
 
-        void setSignal(Signal *csignal) { signal = csignal; }
-        void setRisk(RiskManager *cRiskManager) { riskManager = cRiskManager; }
+        void setSignal(Signal *cSignal) { signal = cSignal; }
+        void setRisk(Risk *cRisk) { risk = cRisk; }
         
+        void initRiskParams(double cRPP = 1, double cRM = 25, double cRR = 5) {    
+            riskPercent = cRPP;
+            riskMax = cRM;
+            riskToReward = cRR;
+        };
+        
+        void initRiskReducer(double cRPR = 0) {
+            riskPercentReduce = cRPR; 
+        }
+
         void Run();
+
+    private:
+        double riskPercentReduce;
+        datetime prevBarTime;
+        bool isNewBar();
+        PositionParams getOrderParams(ENUM_ORDER_TYPE);
 };
 
 extern Frame *frame; // create pointer to object
+
+void Frame::Frame(void) { // constructooor
+}
+
+void Frame::~Frame(void) {
+    delete signal;
+    delete risk;
+}
 
 void Frame::Run() {
 
@@ -37,9 +65,9 @@ void Frame::Run() {
 
     switch (signal.GetSignal()) {
         case SIGNAL_LONG:
-            positionManager.orderOpen(riskManager.getOrderParams(ORDER_TYPE_BUY));
+            positionManager.orderOpen(getOrderParams(ORDER_TYPE_BUY));
         case SIGNAL_SHORT:
-            positionManager.orderOpen(riskManager.getOrderParams(ORDER_TYPE_SELL));
+            positionManager.orderOpen(getOrderParams(ORDER_TYPE_SELL));
         case SIGNAL_IGNORE:
             break;
     }
@@ -52,24 +80,22 @@ void Frame::Run() {
         check for limitations, ignore or hard stop
         limits.?
     */
+}
+
+PositionParams Frame::getOrderParams(ENUM_ORDER_TYPE orderType) {
+    // Get final risk value, get stop loss value in pips from risk model
+    double riskPerPosition = CalcPosRisk(riskPercentReduce, riskPercent);
+    double slPips = risk.getPipValue();
     
-    /* 
-    then we run engine
+    // New structure, fill all values and return
+    PositionParams params;
+    params.type = orderType;
+    params.openPrice = UsedPrice(orderType);
+    params.slPrice = CalcSL(slPips, params.type);
+    params.tpPrice = CalcTP(slPips, params.type, riskToReward);
+    params.volume = CalcLotSize(riskPerPosition, slPips);
 
-        first, service all open deals (modify)
-
-        int result = positionManager.run();
-        
-
-
-        if positionManager allows additional deals ( execution logic)
-
-        second, checking limits (time, loss, max loss)
-            if any limit triggered - return
-    */
-    
-    
-    // to be added
+    return params;
 }
 
 bool Frame::isNewBar() {
@@ -82,9 +108,3 @@ bool Frame::isNewBar() {
 
     return false;
 }
-
-void Frame::Frame(void) { } // constructor
-
-void Frame::~Frame(void) {
-    delete signal;
-}  // deconstructor
