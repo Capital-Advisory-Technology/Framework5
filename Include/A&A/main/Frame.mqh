@@ -1,9 +1,12 @@
-#include <A&A/signal/Signal.mqh> 
+#include <A&A/backend/RiskManager.mqh>
+#include <A&A/backend/PositionManager.mqh>
+#include <A&A/signal/Signal.mqh>
 
 class Frame {
     protected:
         Signal *signal;
-    
+        RiskManager *riskManager;
+
     private:
         datetime prevBarTime;
         bool isNewBar();
@@ -13,7 +16,8 @@ class Frame {
         ~Frame(void);
 
         void setSignal(Signal *csignal) { signal = csignal; }
-
+        void setRisk(RiskManager *cRiskManager) { riskManager = cRiskManager; }
+        
         void Run();
 };
 
@@ -22,28 +26,33 @@ extern Frame *frame; // create pointer to object
 void Frame::Run() {
 
     if (!isNewBar()) return;
+    
+    // if (!riskManager.checkMaxRisk()) return;
 
-    /* 
+    // if (!profitsys.refresh()) return;
+
+    // if (!limits.refresh()) return;
+
+    // check for signal
+
+    switch (signal.GetSignal()) {
+        case SIGNAL_LONG:
+            positionManager.orderOpen(riskManager.getOrderParams(ORDER_TYPE_BUY));
+        case SIGNAL_SHORT:
+            positionManager.orderOpen(riskManager.getOrderParams(ORDER_TYPE_SELL));
+        case SIGNAL_IGNORE:
+            break;
+    }
+
+    /*
         service deals (close, modify), ignore or hard stop
-        
         riskManager.refresh();
         profitSystem.refresh();
 
         check for limitations, ignore or hard stop
         limits.?
     */
-
-    // check for signal
-    switch (signal.GetSignal()) {
-        case SIGNAL_LONG:
-            // positionManager.buy();
-        case SIGNAL_SHORT:
-            // positionManager.sell();
-        case SIGNAL_IGNORE:
-            break;
-    }
-        
-
+    
     /* 
     then we run engine
 
