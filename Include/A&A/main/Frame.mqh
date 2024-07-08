@@ -1,6 +1,7 @@
 // #include <A&A/backend/RiskManager.mqh>
 #include <A&A/common/Structures.mqh>
 #include <A&A/backend/PositionManager.mqh>
+#include <A&A/backend/Limits.mqh>
 #include <A&A/signal/Signal.mqh>
 #include <A&A/risk/Risk.mqh>
 
@@ -8,7 +9,7 @@ class Frame {
     protected:
         Signal *signal;
         Risk *risk;
-        // Limits *limits;
+        Limits *limits;
 
     private:
         // main risk params
@@ -20,9 +21,14 @@ class Frame {
         Frame(void);
         ~Frame(void);
 
-        void setSignal(Signal *cSignal) { signal = cSignal; }
         void setRisk(Risk *cRisk) { risk = cRisk; }
-        // void setLimits(Limits *cLimits) { limits = cLimits; }
+        
+        void setSignal(Signal *cSignal) { signal = cSignal; }
+
+        void setLimits(int cTimeFrom, int cTimeTo) { 
+            limits = new Limits;
+            limits.setIntraDay(cTimeFrom, cTimeTo);
+        };
         
         void initRiskParams(double cRPP = 1, double cRM = 25, double cRR = 5) {    
             riskPercent = cRPP;
@@ -56,12 +62,17 @@ void Frame::~Frame(void) {
 void Frame::Run() {
 
     if (!isNewBar()) return;
-    
+       
+    // Do you mean to check opened position situation?
+    // as in for example, we have 3 trades open, each with risk 2%, maxRisk is at 6%
+    // one trade has SL at breakeven, so this one doesn't count to the max risk,
+    // but the other 2 do, so we dont open a new trade?
+    // if not, then i would suggest to set maxRisk and maxPositions and then calculate the risk per position
     // if (!riskManager.checkMaxRisk()) return;
 
     // if (!profitsys.refresh()) return;
 
-    // if (!limits.refresh()) return;
+    if (!limits.refresh()) return;
 
     // check for signal
 
@@ -82,6 +93,14 @@ void Frame::Run() {
         check for limitations, ignore or hard stop
         limits.?
     */
+    // if we check opened positions here then we would instantly check
+    // the newest position from the previous switch statement
+    if (PositionsTotal() > 0) {
+        for (int i = 0; i < PositionsTotal(); i++) {
+            ulong ticket = PositionGetTicket(i);
+            // profitSystem.refresh(ticket);
+        }
+    }
 }
 
 PositionParams Frame::getOrderParams(ENUM_ORDER_TYPE orderType) {

@@ -14,6 +14,10 @@ input ENUM_APPLIED_PRICE lrPrice = PRICE_HIGH;
 input group "Risk Model"
 input int atrPeriod = 14;
 input double atrMult = 1.5;
+
+input group "Limits"
+input int timeFrom = 8;
+input int timeTo = 18;
  
 Frame *frame = new Frame;
 
@@ -28,6 +32,7 @@ int OnInit() {
     frame.initRiskParams(riskPerPos, 0, 5);
     frame.setSignal(linearRegression);
     frame.setRisk(atr);
+    frame.setLimits(timeFrom, timeTo);
 
     return(INIT_SUCCEEDED);
 }
