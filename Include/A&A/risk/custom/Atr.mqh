@@ -13,7 +13,7 @@ class Atr : public Risk {
         ~Atr(void);
 
         void Init(int period, double multiplier);
-        virtual double getPipValue();
+        virtual double getPipCount();
 };
 
 extern Atr *atr;
@@ -32,7 +32,7 @@ void Atr::Init(int cPeriod, double cMultiplier) {
     atr_handle = iATR(NULL, 0, inpPeriod);
 }
 
-double Atr::getPipValue() {
+double Atr::getPipCount() {
     double _atr_value[];
     ResetLastError();
     ArraySetAsSeries(_atr_value, true);

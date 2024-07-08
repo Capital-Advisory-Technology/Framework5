@@ -4,5 +4,5 @@ class Risk {
         Risk(void){};
         ~Risk(void){};
 
-        virtual double getPipValue()=0;
+        virtual double getPipCount()=0;
 };

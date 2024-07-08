@@ -7,12 +7,14 @@ input double riskPerPos = 2;
 input double riskMax = 25;
 input double riskToReward = 5;
 
+input group "Signal Model"
 input int lrPeriod = 25;
 input ENUM_APPLIED_PRICE lrPrice = PRICE_HIGH;
 
+input group "Risk Model"
 input int atrPeriod = 14;
 input double atrMult = 1.5;
-
+ 
 Frame *frame = new Frame;
 
 LinearRegression *linearRegression = new LinearRegression;

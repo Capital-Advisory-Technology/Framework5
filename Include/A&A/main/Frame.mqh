@@ -8,6 +8,7 @@ class Frame {
     protected:
         Signal *signal;
         Risk *risk;
+        // Limits *limits;
 
     private:
         // main risk params
@@ -21,6 +22,7 @@ class Frame {
 
         void setSignal(Signal *cSignal) { signal = cSignal; }
         void setRisk(Risk *cRisk) { risk = cRisk; }
+        // void setLimits(Limits *cLimits) { limits = cLimits; }
         
         void initRiskParams(double cRPP = 1, double cRM = 25, double cRR = 5) {    
             riskPercent = cRPP;
@@ -85,7 +87,7 @@ void Frame::Run() {
 PositionParams Frame::getOrderParams(ENUM_ORDER_TYPE orderType) {
     // Get final risk value, get stop loss value in pips from risk model
     double riskPerPosition = CalcPosRisk(riskPercentReduce, riskPercent);
-    double slPips = risk.getPipValue();
+    double slPips = risk.getPipCount();
     
     // New structure, fill all values and return
     PositionParams params;
