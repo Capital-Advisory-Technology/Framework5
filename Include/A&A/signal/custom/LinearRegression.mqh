@@ -17,8 +17,8 @@ class LinearRegression : public Signal {
             linregHandle = iCustom(NULL, 0, linregPath, mPeriod, mPrice);
         }
     
-    virtual ENUM_SIGNAL_TYPE GetSignal();
-    virtual ENUM_SIGNAL_TYPE GetBias();
+        virtual ENUM_SIGNAL_TYPE GetSignal();
+        virtual ENUM_SIGNAL_TYPE GetBias();
 };
 
 extern LinearRegression *linearRegression;
