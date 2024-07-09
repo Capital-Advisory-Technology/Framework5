@@ -96,9 +96,14 @@ void Frame::Run() {
     // if we check opened positions here then we would instantly check
     // the newest position from the previous switch statement
     if (PositionsTotal() > 0) {
-        for (int i = 0; i < PositionsTotal(); i++) {
+        for(int i = 0; i < PositionsTotal(); i++) {
             ulong ticket = PositionGetTicket(i);
-            // profitSystem.refresh(ticket);
+            if(PositionSelectByTicket(ticket)) {
+                if (PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+                // do profitSystem here
+                Print("Position: ", ticket);
+                Print("--------------------");
+            }
         }
     }
 }
