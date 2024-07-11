@@ -1,4 +1,5 @@
 enum SIGNAL_TYPE {
+    SIGNAL_NULL = 0,
     SIGNAL_BUY = 100,
     SIGNAL_SELL = 101,
     SIGNAL_IGNORE = 102

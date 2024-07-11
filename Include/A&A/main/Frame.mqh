@@ -1,4 +1,3 @@
-// #include <A&A/backend/RiskManager.mqh>
 #include <A&A/backend/Limits.mqh>
 #include <A&A/backend/PositionManager.mqh>
 #include <A&A/backend/ProfitSystem.mqh>
@@ -7,63 +6,61 @@
 #include <A&A/signal/Signal.mqh>
 
 class Frame {
-  protected:
-    Signal       *signal;
-    Risk         *risk;
-    Limits       *limits;
-    ProfitSystem *profitSystem;
+    protected:
+        Signal       *signal;
+        Risk         *risk;
+        Limits       *limits;
+        ProfitSystem *profitSystem;
 
-  private:
-    // main risk params
-    double riskPercent;
-    double riskMax;
-    double riskToReward;
+    private:
+        // main risk params
+        double riskPercent;
+        double riskMax;
+        double riskToReward;
 
-  public:
-    Frame(void);
-    ~Frame(void);
+    public:
+        void setRisk(Risk *cRisk) { risk = cRisk; }
 
-    void setRisk(Risk *cRisk) { risk = cRisk; }
+        void setSignal(Signal *cSignal) { signal = cSignal; }
 
-    void setSignal(Signal *cSignal) { signal = cSignal; }
+        void setLimits(int cTimeFrom, int cTimeTo) {
+            limits = new Limits;
+            limits.setIntraDay(cTimeFrom, cTimeTo);
+        };
 
-    void setLimits(int cTimeFrom, int cTimeTo) {
-        limits = new Limits;
-        limits.setIntraDay(cTimeFrom, cTimeTo);
-    };
+        void setProfitSystem(double cBE, double cT1, double cT2, double cS1, double cS2) {
+            profitSystem = new ProfitSystem(cBE, cT1, cT2, cS1, cS2);
+        };
 
-    void setProfitSystem(double cBE, double cT1, double cT2, double cS1, double cS2) {
-        profitSystem = new ProfitSystem(cBE, cT1, cT2, cS1, cS2);
-    };
+        void init(double cRPP = 1, double cRM = 25, double cRR = 5) {
+            riskPercent  = cRPP;
+            riskMax      = cRM;
+            riskToReward = cRR;
+        };
 
-    void initRiskParams(double cRPP = 1, double cRM = 25, double cRR = 5) {
-        riskPercent  = cRPP;
-        riskMax      = cRM;
-        riskToReward = cRR;
-    };
+        void initRiskReducer(double cRPR = 0) {
+            riskPercentReduce = cRPR;
+        }
 
-    void initRiskReducer(double cRPR = 0) {
-        riskPercentReduce = cRPR;
-    }
+        void Run();
+        
+        Frame(void) {};
+    
+        ~Frame(void) { 
+            delete signal;
+            delete risk;
+            delete limits;
+            delete profitSystem;
+        }
 
-    void Run();
-
-  private:
-    double         riskPercentReduce;
-    datetime       prevBarTime;
-    bool           isNewBar();
-    PositionParams getOrderParams(ENUM_ORDER_TYPE);
+    private:
+        double         riskPercentReduce;
+        datetime       prevBarTime;
+        bool           isNewBar();
+        PositionParams getOrderParams(ENUM_ORDER_TYPE);
 };
 
 extern Frame *frame;   // create pointer to object
-
-void Frame::Frame(void) {   // constructooor
-}
-
-void Frame::~Frame(void) {
-    delete signal;
-    delete risk;
-}
 
 void Frame::Run() {
 
@@ -110,10 +107,10 @@ void Frame::Run() {
 
     // check for signal
 
-    switch(signal.GetSignal()) {
-        case SIGNAL_LONG:
+    switch(signal.getSignal()) {
+        case SIGNAL_BUY:
             positionManager.orderOpen(getOrderParams(ORDER_TYPE_BUY));
-        case SIGNAL_SHORT:
+        case SIGNAL_SELL:
             positionManager.orderOpen(getOrderParams(ORDER_TYPE_SELL));
         case SIGNAL_IGNORE:
             break;

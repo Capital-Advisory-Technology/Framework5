@@ -10,6 +10,6 @@ class Signal {
 
         void Init();
 
-        virtual ENUM_SIGNAL_TYPE GetSignal() { return 0; }
-        virtual ENUM_SIGNAL_TYPE GetBias() { return 0; }
+        virtual SIGNAL_TYPE getSignal() { return 0; }
+        virtual SIGNAL_TYPE getBias() { return 0; }
 };

@@ -9,23 +9,22 @@ class Atr : public Risk {
         double inpMultiplier;
 
     public:
-        Atr(void);
-        ~Atr(void);
+        
+        Atr(void) : inpPeriod(14),
+                     inpMultiplier(0.7) {}
+        
+        ~Atr(void) {
+            IndicatorRelease(atr_handle);
+        }
 
-        void Init(int period, double multiplier);
+        void init(int period, double multiplier);
+        
         virtual double getPipCount();
 };
 
 extern Atr *atr;
 
-void Atr::Atr(void) : inpPeriod(14),
-                     inpMultiplier(0.7) {}
-
-void Atr::~Atr(void) {
-    IndicatorRelease(atr_handle);
-}
-
-void Atr::Init(int cPeriod, double cMultiplier) {
+void Atr::init(int cPeriod, double cMultiplier) {
     inpPeriod = cPeriod;
     inpMultiplier = cMultiplier;
 
