@@ -18,6 +18,13 @@ input double atrMult = 1.5;
 input group "Limits"
 input int timeFrom = 8;
 input int timeTo = 18;
+
+input group "ProfitSystem"
+input double beTarget = 0.5;
+input double target1 = 0.5;
+input double target2 = 0.8;
+input double stop1 = 0.5;
+input double stop2 = 0.8;
  
 Frame *frame = new Frame;
 
@@ -33,6 +40,7 @@ int OnInit() {
     frame.setSignal(linearRegression);
     frame.setRisk(atr);
     frame.setLimits(timeFrom, timeTo);
+    frame.setProfitSystem(beTarget, target1, target2, stop1, stop2);
 
     return(INIT_SUCCEEDED);
 }

@@ -12,7 +12,7 @@ class PositionManager {
         void orderOpen(PositionParams &params);
                        
         void orderClose();
-        void orderModify(double sl, double tp);
+        void orderModify(ulong ticket, double sl, double tp);
         void orderPartialClose(double volume);
 
         bool isOrderOpen() { return PositionsTotal() != 0;};
@@ -33,8 +33,8 @@ void PositionManager::orderOpen(PositionParams &params) {
     }
 }
 
-void PositionManager::orderModify(double sl, double tp) {
-    if (!trade.PositionModify(_Symbol, sl, tp)) {
+void PositionManager::orderModify(ulong ticket, double sl, double tp) {
+    if (!trade.PositionModify(ticket, sl, tp)) {
         SetUserError(2);
         return;
     }
