@@ -1,21 +1,21 @@
 class ProfitSystem {
-  protected:
-    double breakevenTarget;
-    double target1;
-    double target2;
-    double stop1;
-    double stop2;
+    protected:
+        double breakevenTarget;
+        double target1;
+        double target2;
+        double stop1;
+        double stop2;
 
-  private:
-    double profitZone(double target, double stop);
+    private:
+        double profitZone(double target, double stop);
 
-  public:
-    ProfitSystem(double cBE, double cT1, double cT2, double cS1, double cS2);
-    ~ProfitSystem();
+    public:
+        ProfitSystem(double cBE, double cT1, double cT2, double cS1, double cS2);
+        ~ProfitSystem(); // techically don't need this defined
 
-    double breakeven();
-    double profitZone1();
-    double profitZone2();
+        double breakeven();
+        double profitZone1();
+        double profitZone2();
 };
 
 ProfitSystem::ProfitSystem(double cBE = 0, double cT1 = 0, double cT2 = 0, double cS1 = 0, double cS2 = 0) {
@@ -24,9 +24,6 @@ ProfitSystem::ProfitSystem(double cBE = 0, double cT1 = 0, double cT2 = 0, doubl
     target2         = cT2;
     stop1           = cS1;
     stop2           = cS2;
-}
-
-ProfitSystem::~ProfitSystem() {
 }
 
 double ProfitSystem::profitZone(double target, double stop) {

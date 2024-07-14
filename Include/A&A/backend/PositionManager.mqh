@@ -6,8 +6,8 @@ class PositionManager {
     protected:  
         CTrade  *trade;
     public:
-        PositionManager(void);
-        ~PositionManager(void);
+        PositionManager(void) { trade = new CTrade; }
+        ~PositionManager(void) { delete trade; }
 
         void orderOpen(PositionParams &params);
                        
@@ -19,12 +19,6 @@ class PositionManager {
 };
  
 PositionManager *positionManager = new PositionManager;
-
-PositionManager::PositionManager(void): trade(new CTrade) {}
-
-void PositionManager::~PositionManager(void) {
-    delete trade;
-}
 
 void PositionManager::orderOpen(PositionParams &params) {
     if (!trade.PositionOpen(_Symbol, params.type, params.volume, params.openPrice, params.slPrice, params.tpPrice, "")) {

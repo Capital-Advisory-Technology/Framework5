@@ -9,13 +9,8 @@ class Atr : public Risk {
         double inpMultiplier;
 
     public:
-        
-        Atr(void) : inpPeriod(14),
-                     inpMultiplier(0.7) {}
-        
-        ~Atr(void) {
-            IndicatorRelease(atr_handle);
-        }
+        Atr(void) { inpPeriod = 14; inpMultiplier = 1; }
+        ~Atr(void) { IndicatorRelease(atr_handle); }
 
         void init(int period, double multiplier);
         

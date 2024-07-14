@@ -6,7 +6,7 @@ class LinearRegression : public Signal {
         int linregHandle;
 
     public:
-        LinearRegression(void){};
+        LinearRegression(void){}; // can be used for doing the init function (less code?)
         
         ~LinearRegression(void) {
             IndicatorRelease(linregHandle);

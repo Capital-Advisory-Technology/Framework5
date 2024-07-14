@@ -2,11 +2,13 @@ class Limits {
     protected:
         int timeFrom;
         int timeTo;
+    
     private:
         bool intraDayAllowed();
+
     public:
-        Limits(void);
-        ~Limits(void);
+        Limits(void) { timeFrom = 0; timeTo = 0; } 
+        ~Limits(void); // techincally no need to define it here
 
         void setIntraDay(int cTimeFrom = 0, int cTimeTo = 0) {
             timeFrom = cTimeFrom;
@@ -15,11 +17,6 @@ class Limits {
         
         bool refresh();
 };
-
-Limits::Limits(void) : timeFrom(0),
-                       timeTo(0) {}
-
-Limits::~Limits(void) {}
 
 bool Limits::intraDayAllowed() {
     if (timeFrom == 0 && timeTo == 0) return true;

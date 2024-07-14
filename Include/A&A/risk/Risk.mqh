@@ -1,8 +1,4 @@
 class Risk {
-
     public:
-        Risk(void){};
-        ~Risk(void){};
-
-        virtual double getPipCount()=0;
+        virtual double getPipCount() { return 0; };
 };

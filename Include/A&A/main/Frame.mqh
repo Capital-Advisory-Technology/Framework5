@@ -44,8 +44,6 @@ class Frame {
 
         void Run();
         
-        Frame(void) {};
-    
         ~Frame(void) { 
             delete signal;
             delete risk;
